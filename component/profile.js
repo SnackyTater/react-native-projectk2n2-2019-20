@@ -30,6 +30,12 @@ export default class Profile extends React.Component {
         }).catch((err) => {console.log('')});
     }
 
+    logOut() {
+        AsyncStorage.removeItem('user').then(() => {
+            this.props.navigation.navigate('Login');
+        })
+    }
+
     render() {
         return (
             <View style={styles.container}>
