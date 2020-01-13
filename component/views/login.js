@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, Image } from 'react-native';
 
 
 export default class Login extends React.Component {
@@ -16,10 +16,11 @@ export default class Login extends React.Component {
     }
 
     _loadInitialState = async () => {
-      var value = await AsyncStorage.getItem('user');
-      if(value !== null){
-        this.props.navigation.navigate('Profile');
-      }  
+      await AsyncStorage.getItem('user').then((value) => {
+        if(value !== null){
+          this.props.navigation.navigate('Profile');
+        }
+      })
     }
 
     login() {
@@ -44,7 +45,7 @@ export default class Login extends React.Component {
             alert('Sai mật khẩu');
           }
         }else {
-            if(data.user.username == this.state.username) {
+            if(data.user.username == this.state.username.toUpperCase()) {
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
               this.props.navigation.navigate('Profile');
             }
@@ -55,28 +56,23 @@ export default class Login extends React.Component {
   render() {  
     return (
       <KeyboardAvoidingView behavior='padding' style={styles.wrapper}>
-        <View style={styles.containter}>
-          <Text style={styles.header}>Đăng nhập</Text>
+        <View style={styles.container}>
+          <View style = {styles.header}>
+            <View style={styles.imageContainer}>
+              <Image style = {styles.img} source={require('../../assets/LogoTLU.jpg')}/>
+            </View>
+          </View>
+          <View style = {styles.body}>
+            <Text style={styles.text}>Đăng nhập</Text>
 
-          <TextInput 
-            style={styles.textInput} 
-            placeholder='Username'
-            onChange={(userName) => {this.setState({username: userName.nativeEvent.text})}}
-          />
+            <TextInput style={styles.textInput} placeholder='Username' onChange={(userName) => {this.setState({username: userName.nativeEvent.text})}}/>
 
-          <TextInput 
-            style={styles.textInput} 
-            placeholder='Password'
-            onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}}
-          />
+            <TextInput style={styles.textInput} placeholder='Password'onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}}/>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {this.login()}}
-          >
-            <Text>Log in</Text>
-          </TouchableOpacity>
-
+            <TouchableOpacity style={styles.button}onPress={() => {this.login()}}>
+              <Text style={styles.textButton}>Đăng nhập</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     );
@@ -88,15 +84,39 @@ const styles = StyleSheet.create({
   wrapper:{
     flex: 1
   },
-  containter: {
+  container: {
+    flex: 1
+  },
+  header: {
+    height: 200,
+    backgroundColor: '#9152f8',
+    position: 'relative'
+  },
+  imageContainer:{
+    position: 'absolute',
+    
+    flex: 1,
+    overflow: 'hidden',
+    height: 150,
+    width: 150,
+    borderRadius: 150/2,
+    top: 50,
+    left: 110
+  },
+  img: {
+    flex:1,
+    width: 150,
+    height: 150,
+    resizeMode: 'contain'
+  },
+  body: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#9152f8',
     paddingLeft: 40,
     paddingRight: 40
   },
-  header: {
+  text: {
     fontSize: 24,
     marginBottom: 60,
     color: '#fff',
@@ -114,5 +134,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     alignItems: 'center',
-  }
+  },
 });
