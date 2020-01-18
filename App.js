@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigator from './component/navigator/drawer/drawer-main';
+import Navigator from './component/navigator/drawer/mainDrawer';
 
 export default class App extends React.Component {
   render() {
