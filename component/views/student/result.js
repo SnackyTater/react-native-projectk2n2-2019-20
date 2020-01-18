@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import Loading from '../general/loading';
 
 export default class Result extends React.Component {
     constructor(props) {

@@ -3,14 +3,26 @@ import {NavigationActions} from 'react-navigation';
 import {ScrollView, Text, View, AsyncStorage, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
 export default class subDrawer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      role: ''
+    }
+  }
+
+  componentDidMount(){
+    AsyncStorage.getItem('user').then((preData) => {
+      let postData = JSON.parse(preData);
+      
+  }).catch((err) => {
+      console.log('')
+  });
+  }
 
   Logout() {
     AsyncStorage.removeItem('user').then(() => {
-      AsyncStorage.getItem('user').then((data) => {
-        console.log(data);
         this.props.navigation.navigate('Login');
-      })
-    })
+    }).catch((err) => {console.log('')});
   }
 
   render () {
@@ -18,7 +30,7 @@ export default class subDrawer extends Component {
       <View const style = {styles.container}>
         <View style = {styles.header}>
           <View style={styles.imageContainer}>
-            <Image style = {styles.img} source={require('../../assets/LogoTLU.jpg')}/>
+            <Image style = {styles.img} source={require('../../../assets/LogoTLU.jpg')}/>
           </View>
         </View>
         <ScrollView>

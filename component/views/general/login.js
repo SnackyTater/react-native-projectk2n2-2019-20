@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, Image, Dimensions } from 'react-native';
 
 
 export default class Login extends React.Component {
@@ -9,6 +9,7 @@ export default class Login extends React.Component {
         username: '',
         password: '',
       }
+
     }
 
     componentDidMount() {
@@ -45,7 +46,7 @@ export default class Login extends React.Component {
             alert('Sai mật khẩu');
           }
         }else {
-            if(data.user.username == this.state.username.toUpperCase()) {
+            if((data.user.username == this.state.username.toUpperCase()) || (data.user.username == this.state.username)) {
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
               this.props.navigation.navigate('Profile');
             }
@@ -80,6 +81,15 @@ export default class Login extends React.Component {
 }
 
 
+const getWidth = () => {
+  return Dimensions.get('window').width;
+}
+
+const getHeight = () => {
+  return Dimensions.get('window').height;
+}
+
+
 const styles = StyleSheet.create({
   wrapper:{
     flex: 1
@@ -94,14 +104,13 @@ const styles = StyleSheet.create({
   },
   imageContainer:{
     position: 'absolute',
-    
     flex: 1,
     overflow: 'hidden',
     height: 150,
     width: 150,
     borderRadius: 150/2,
-    top: 50,
-    left: 110
+    alignSelf: 'center',
+    bottom: '5%'
   },
   img: {
     flex:1,

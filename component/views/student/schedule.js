@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
+import Loading from '../general/loading';
 
 export default class Schedule extends React.Component {
     render() {

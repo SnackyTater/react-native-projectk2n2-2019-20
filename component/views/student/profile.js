@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
-import { withNavigation } from 'react-navigation';
 
-import Loading from './loading';
+import Loading from '../general/loading';
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -24,9 +23,11 @@ export default class Profile extends React.Component {
 
     //load data when navigated to this component
     componentDidMount(){
+        console.log('profile entered');
         //get item from async storage
         AsyncStorage.getItem('user').then((preData) => {
             let data = JSON.parse(preData);
+            console.log(data);
             let dob = data.user.dob.slice(0, 10);
             this.setState({
                 name: data.user.name,
@@ -42,37 +43,39 @@ export default class Profile extends React.Component {
             });
         }).catch((err) => {
             console.log('')
-            window.location.reload();
         });
     }
 
-    deleteState() {
-        this.setState({
-            name: null,
-            dob: null,
-            phone: null,
-            email: null,
-            identityID: null,
-            credits: null,
-            englishLevel: null,
-            schoolYear: null,
-            specialty: null,
-            loading: true
-        })
-    }
+    // deleteState() {
+    //     AsyncStorage.getItem('user').then(() => {
+    //         this.setState({
+    //             name: null,
+    //             dob: null,
+    //             phone: null,
+    //             email: null,
+    //             identityID: null,
+    //             credits: null,
+    //             englishLevel: null,
+    //             schoolYear: null,
+    //             specialty: null,
+    //             loading: true
+    //         })
+    //     })
+    // }
 
-    showState(){
-        console.log(this.state);
-        AsyncStorage.getItem('user').then((data) => {
-            console.log(data);
-        })
-    }
+    // showState(){
+    //     console.log(this.state);
+    //     AsyncStorage.getItem('user').then((data) => {
+    //         console.log(data);
+    //     })
+    // }
+
+    // //bootleg componentDidMount (will need to fix
+    // forceUpdateHandler(){
+    //     this.componentDidMount();
+    // }
 
     render() {
-        if(this.state.loading){
-            return <Loading/>
-        }
-        else {
             return (
                 <View style={styles.general}>
                     <Header style={styles.headerContainer}>
@@ -89,17 +92,19 @@ export default class Profile extends React.Component {
                         <Text style={styles.text}>Trình độ tiếng anh: {this.state.englishLevel}</Text>
                         <Text style={styles.text}>Chuyên ngành: {this.state.specialty}</Text>
                         <Text style={styles.text}>Số tín chỉ tích lũy: {this.state.credits}</Text>
-                        <TouchableOpacity onPress={() => {this.deleteState()}}>
+                        {/* <TouchableOpacity onPress={() => {this.deleteState()}}>
                             <Text>delete state</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => {this.showState()}}>
                             <Text>show state</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {this.forceUpdateHandler()}}>
+                            <Text>Force update</Text>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
             )
-        } 
-    }
+        }
 }
 
 const styles = StyleSheet.create({
@@ -119,6 +124,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 20,
-        color: 'black'
+        color: 'black',
+        padding: 10
     }
 });
