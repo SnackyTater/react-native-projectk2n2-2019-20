@@ -5,18 +5,6 @@ import {ScrollView, Text, View, AsyncStorage, StyleSheet, TouchableOpacity, Imag
 export default class subDrawer extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      role: ''
-    }
-  }
-
-  componentDidMount(){
-    AsyncStorage.getItem('user').then((preData) => {
-      let postData = JSON.parse(preData);
-      
-  }).catch((err) => {
-      console.log('')
-  });
   }
 
   Logout() {
@@ -35,22 +23,22 @@ export default class subDrawer extends Component {
         </View>
         <ScrollView>
           <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('Profile')}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentProfile')}}>
               <Text style={styles.navText}>Thông tin cá nhân</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('Result')}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentResult')}}>
               <Text style={styles.navText}>Bảng điểm</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('Schedule')}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentSchedule')}}>
               <Text style={styles.navText}>Thời khóa biểu</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('schoolSchedule')}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentSchoolSchedule')}}>
               <Text style={styles.navText}>Thời khóa biểu toàn trường</Text>
             </TouchableOpacity>
           </View>

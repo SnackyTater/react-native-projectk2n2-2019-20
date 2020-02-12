@@ -9,14 +9,13 @@ export default class Login extends React.Component {
         username: '',
         password: '',
       }
-
     }
 
     componentDidMount() {
-      this._loadInitialState().done();
+      this.loadInitialState().done();
     }
 
-    _loadInitialState = async () => {
+    loadInitialState = async () => {
       await AsyncStorage.getItem('user').then((value) => {
         if(value !== null){
           this.props.navigation.navigate('Profile');
@@ -60,7 +59,7 @@ export default class Login extends React.Component {
         <View style={styles.container}>
           <View style = {styles.header}>
             <View style={styles.imageContainer}>
-              <Image style = {styles.img} source={require('../../assets/LogoTLU.jpg')}/>
+              <Image style = {styles.img} source={require('../../../assets/LogoTLU.jpg')}/>
             </View>
           </View>
           <View style = {styles.body}>

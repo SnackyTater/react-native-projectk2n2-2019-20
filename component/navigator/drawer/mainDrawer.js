@@ -10,7 +10,7 @@ import loginNav from '../stackNav/studentLoginNav';
 //import student only component
 import studentProfile from '../../views/student/profile';
 import studentResult from '../../views/student/result';
-import studentSchedule from '../../views/schedule';
+import studentSchedule from '../../views/student/schedule';
 import studentSchoolSchedule from '../../views/student/schoolSchedule';
 
 //import teacher only component

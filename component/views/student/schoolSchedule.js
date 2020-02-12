@@ -8,7 +8,10 @@ export default class schoolSchedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: []
+            list: [],
+            processedList: [],
+            tableHeader: ['Mã môn', 'Tên môn', 'Tên lớp', 'Thứ', 'Ca', 'Phòng học', 'Tín chỉ', 'Giáo viên'],
+            widthArr: [100,200,200,100,100,100,100,200]
         }
     }
 
@@ -22,22 +25,43 @@ export default class schoolSchedule extends React.Component {
                 'Authorization': 'Bearer ' + data.token,
                 }
             }).then((res) => res.json()).then((Schedule) => {
+                let processedList = this.listProcessor(Schedule,'');
                 this.setState({
-                    list: [...Schedule]
-                });
+                    list: [...Schedule],
+                    processedList: [...processedList]
+                });              
+
             }).done();
-        }).catch((err) => {console.log('')}); 
+        }).catch((err) => {console.log('')});
     }
 
-    // showState() {
-    //     // console.log(this.state.list);
-    //     console.log(typeof(this.state.list));
-    // }
-    
-    // blin() {
-    //     let sth = this.state.list;
-    //     console.log(sth);
-    // }
+    listProcessor(rawList, condition){
+        if(condition==''){
+            let processedList = []
+            rawList.map((listItem) => {
+                //setup variable 
+                let holder = [];
+                var shift = listItem.from.name + '-' + listItem.to.name;
+
+                //push to holder
+                holder.push(listItem.class.subject.subjectID);
+                holder.push(listItem.class.subject.name);
+                holder.push(listItem.class.name);
+                holder.push(listItem.dayOfWeek);
+                holder.push(shift);
+                holder.push(listItem.classRoom.name);
+                holder.push(listItem.class.subject.coefficient);
+                holder.push(listItem.instructor.user.name);
+
+                //push to processed list
+                processedList.push(holder);
+            })
+            console.log(processedList);
+            return processedList;
+        } else {
+
+        }
+    }
 
     render() {
         return (
@@ -48,21 +72,28 @@ export default class schoolSchedule extends React.Component {
                     </Left>
                 </Header>
                 <View style={styles.infoContainer}>
-                    <ScrollView>
-                        {
-                            this.state.list.map((item) => {
-                                return(
-                                    <View style = {styles.listItem} key={item._id}>
-                                        <Text>{item.class.subject.subjectID}</Text>
-                                        <Text>{item.class.subject.name}</Text>
-                                        <Text>{item.class.name}</Text>
-                                        <Text>{item.dayOfWeek}</Text>
-                                        <Text>{item.from.name}-{item.to.name}</Text>
-                                        <Text>{item.instructor.name}</Text>
-                                    </View>
-                                )
-                            })
-                        }
+                    <ScrollView horizontal={true}>
+                        {/*filter menu */}
+                        <View>
+                            
+                        </View>
+
+                        {/*table start here*/}
+                        <View>
+                            <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
+                                <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
+                            </Table>
+                            <ScrollView style={styles.tableDataWrapper}>
+                                <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
+                                    {
+                                        this.state.processedList.map((rowData, index) => (
+                                            <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
+                                        ))
+                                    }
+                                </Table>
+                            </ScrollView>
+                        </View>
+                        {/*table end here */}
                     </ScrollView>
                 </View>
             </View>
@@ -85,14 +116,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    listItem: {
-        padding: 10,
-        borderWidth: 1,
-        borderColor: 'red',
-    },
-    text: {
-        fontSize: 20,
-        color: 'black'
-    }
+    tableContainer: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
+    tableHeader: { height: 50, backgroundColor: '#537791' },
+    tableText: { textAlign: 'center', fontWeight: '100' },
+    tableDataWrapper: { marginTop: -1 },
+    tableRow: { height: 40, backgroundColor: '#E7E6E1'}
+
 });
 

@@ -1,6 +1,6 @@
 import { createStackNavigator } from 'react-navigation-stack';
 
-import Login from '../../views/general/loading';
+import Login from '../../views/general/login';
 import studentProfile from '../../views/student/profile';
 
 const loginNav = createStackNavigator({
