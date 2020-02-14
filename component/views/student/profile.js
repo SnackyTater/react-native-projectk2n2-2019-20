@@ -111,9 +111,13 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         backgroundColor: '#9152f8',
-        height: 70
+        height: 70,
+        position: 'relative'
     },
     menuContainer: {
+        position: 'absolute',
+        left: 20,
+        bottom: 10,
         flex: 1
     },
     infoContainer: {

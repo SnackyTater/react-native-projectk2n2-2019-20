@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, AsyncStorage, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image, Dimensions } from 'react-native';
 
 
 export default class Login extends React.Component {
@@ -55,7 +55,6 @@ export default class Login extends React.Component {
 
   render() {  
     return (
-      <KeyboardAvoidingView behavior='padding' style={styles.wrapper}>
         <View style={styles.container}>
           <View style = {styles.header}>
             <View style={styles.imageContainer}>
@@ -67,14 +66,13 @@ export default class Login extends React.Component {
 
             <TextInput style={styles.textInput} placeholder='Username' onChange={(userName) => {this.setState({username: userName.nativeEvent.text})}}/>
 
-            <TextInput style={styles.textInput} placeholder='Password'onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}}/>
+            <TextInput style={styles.textInput} placeholder='Password'onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}} secureTextEntry={true}/>
 
             <TouchableOpacity style={styles.button}onPress={() => {this.login()}}>
               <Text style={styles.textButton}>Đăng nhập</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
     );
   }
 }

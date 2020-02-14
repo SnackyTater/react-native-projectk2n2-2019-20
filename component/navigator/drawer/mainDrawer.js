@@ -33,6 +33,8 @@ const DrawerNavigator = createDrawerNavigator({
       screen: studentSchoolSchedule
   },
 }, {
+  gestureEnabled: false,
+  drawerLockMode: 'locked-closed',
   contentComponent: customDrawer,
   drawerWidth: 300
 });
