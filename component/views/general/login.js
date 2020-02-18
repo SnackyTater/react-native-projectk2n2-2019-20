@@ -35,6 +35,7 @@ export default class Login extends React.Component {
           password: this.state.password,
         })
       }).then((res) => res.json()).then((data) => {
+        console.log(data);
         let flag = data.hasOwnProperty('message');
 
         if(flag){
@@ -47,7 +48,7 @@ export default class Login extends React.Component {
         }else {
             if((data.user.username == this.state.username.toUpperCase()) || (data.user.username == this.state.username)) {
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
-              this.props.navigation.navigate('Profile');
+              this.props.navigation.navigate('studentProfile');
             }
         }
       }).done();

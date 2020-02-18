@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "bruh",
+    "name": "Đăng ký học TLU",
     "slug": "myproject",
     "privacy": "public",
     "sdkVersion": "36.0.0",
@@ -25,6 +25,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "dành cho môn project \nmade by: SnackyTater",
+    "githubUrl": "https://github.com/SnackyTater/react-native-projectk2n2-2019-20"
   }
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {ScrollView, Text, View, AsyncStorage, StyleSheet, TouchableOpacity, Image} from 'react-native';
 
-export default class studentDrawer extends Component {
+export default class teacherDrawer extends Component {
   Logout() {
     AsyncStorage.removeItem('user').then(() => {
         this.props.navigation.navigate('Login');
@@ -20,11 +20,6 @@ export default class studentDrawer extends Component {
           <View style={styles.navSectionStyle}>
             <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentProfile')}}>
               <Text style={styles.navText}>Thông tin cá nhân</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('Result')}}>
-              <Text style={styles.navText}>Bảng điểm</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.navSectionStyle}>

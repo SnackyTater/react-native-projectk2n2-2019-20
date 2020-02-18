@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, AsyncStorage, ScrollView, Text } from 'react-native';
+import { StyleSheet, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
@@ -181,7 +181,7 @@ export default class schoolSchedule extends React.Component {
                         <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
                     </Left>
                     <View style={styles.headerInfoContainer}>
-                        <Text style={{color: '#fff', fontSize: 20}}>Thời khóa biểu toàn trường</Text>
+                        <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu toàn trường</Text>
                     </View>
                 </Header>
                 <Dropdown label='Chọn kỳ học' data={this.state.semesterFilter} onChangeText={this.onChangeSemester}/>
@@ -191,11 +191,11 @@ export default class schoolSchedule extends React.Component {
                     <ScrollView horizontal={true}>
                         {/*table start here*/}
                         <View>
-                            <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                            <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                                 <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
                             </Table>
                             <ScrollView style={styles.tableDataWrapper}>
-                                <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                                <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                                     {
                                         this.state.processedList.map((rowData, index) => (
                                             <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     tableContainer: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    tableHeader: { height: 50, backgroundColor: '#9152f8' },
+    tableHeader: { height: 50, backgroundColor: '#537791' },
     tableText: { textAlign: 'center', fontWeight: '100' },
     tableDataWrapper: { marginTop: -1 },
     tableRow: { height: 40, backgroundColor: '#E7E6E1'}

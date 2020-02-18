@@ -5,12 +5,27 @@ import {ScrollView, Text, View, AsyncStorage, StyleSheet, TouchableOpacity, Imag
 export default class subDrawer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      studentProfile: '#fff',
+      studentResult: '#fff',
+      studentSchedule: '#fff',
+      studentSchoolSchedule: '#fff'
+    }
   }
 
   Logout() {
     AsyncStorage.removeItem('user').then(() => {
         this.props.navigation.navigate('Login');
     }).catch((err) => {console.log('')});
+  }
+
+  resetColor(){
+    this.setState({
+      studentProfile: '#fff',
+      studentResult: '#fff',
+      studentSchedule: '#fff',
+      studentSchoolSchedule: '#fff'
+    })
   }
 
   render () {
@@ -21,28 +36,44 @@ export default class subDrawer extends Component {
             <Image style = {styles.img} source={require('../../../assets/LogoTLU.jpg')}/>
           </View>
         </View>
-        <ScrollView>
-          <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentProfile')}}>
+        <ScrollView style={{top: 20}}>
+          <View style={{backgroundColor: this.state.studentProfile, padding: 10}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                  this.props.navigation.navigate('studentProfile');
+                  this.resetColor();
+                  this.setState({studentProfile: '#9d65f7'});
+                }}>
               <Text style={styles.navText}>Thông tin cá nhân</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentResult')}}>
+          <View style={{backgroundColor: this.state.studentResult, padding: 10}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                this.props.navigation.navigate('studentResult')
+                this.resetColor();
+                this.setState({studentResult: '#9d65f7'});
+              }}>
               <Text style={styles.navText}>Bảng điểm</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentSchedule')}}>
+          <View style={{backgroundColor: this.state.studentSchedule, padding: 10}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                this.props.navigation.navigate('studentSchedule')
+                this.resetColor();
+                this.setState({studentSchedule: '#9d65f7'});
+              }}>
               <Text style={styles.navText}>Thời khóa biểu</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.navSectionStyle}>
-            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.props.navigation.navigate('studentSchoolSchedule')}}>
+          <View style={{backgroundColor: this.state.studentSchoolSchedule, padding: 10}}>
+            <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                this.props.navigation.navigate('studentSchoolSchedule')
+                this.resetColor();
+                this.setState({studentSchoolSchedule: '#9d65f7'});
+              }}>
               <Text style={styles.navText}>Thời khóa biểu toàn trường</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.navSectionStyle}>
+          <View style={{padding: 10}}>
             <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.Logout()}}>
               <Text style={styles.navText}>Đăng xuất</Text>
             </TouchableOpacity>
