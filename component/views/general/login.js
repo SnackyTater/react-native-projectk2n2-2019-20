@@ -8,6 +8,8 @@ export default class Login extends React.Component {
       this.state = {
         username: '',
         password: '',
+        usernameFocus: false,
+        password: false
       }
     }
 
@@ -48,7 +50,12 @@ export default class Login extends React.Component {
         }else {
             if((data.user.username == this.state.username.toUpperCase()) || (data.user.username == this.state.username)) {
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
-              this.props.navigation.navigate('studentProfile');
+              if(data.user.role == 'sv'){
+                this.props.navigation.navigate('studentProfile');
+              }
+              if(data.user.role == 'gv'){
+                this.props.navigation.navigate('teacherProfile');
+              }
             }
         }
       }).done();
@@ -63,11 +70,28 @@ export default class Login extends React.Component {
             </View>
           </View>
           <View style = {styles.body}>
-            <Text style={styles.text}>Đăng nhập</Text>
+            <View>
+              <Text style={styles.text}>Đăng nhập</Text>
+            </View>
 
-            <TextInput style={styles.textInput} placeholder='Username' onChange={(userName) => {this.setState({username: userName.nativeEvent.text})}}/>
+            <TextInput 
+              style={(this.state.usernameFocus) ? styles.textInputOnFocus : styles.textInputOnBlur}
+              placeholder='Username' 
+              onChange={(userName) => {this.setState({username: userName.nativeEvent.text})}} 
+              onFocus={() => {this.setState({usernameFocus: true})}}
+              onBlur={() => {this.setState({usernameFocus: false})}}
+              value={this.state.username}
+            />
 
-            <TextInput style={styles.textInput} placeholder='Password'onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}} secureTextEntry={true}/>
+            <TextInput 
+              style={(this.state.passwordFocus) ? styles.textInputOnFocus : styles.textInputOnBlur} 
+              placeholder='Password'
+              onChange={(passWord) => {this.setState({password: passWord.nativeEvent.text})}}
+              onFocus={() => {this.setState({passwordFocus: true})}}
+              onBlur={() => {this.setState({passwordFocus: false})}}
+              secureTextEntry={true}
+              value={this.state.password}
+            />
 
             <TouchableOpacity style={styles.button}onPress={() => {this.login()}}>
               <Text style={styles.textButton}>Đăng nhập</Text>
@@ -77,16 +101,6 @@ export default class Login extends React.Component {
     );
   }
 }
-
-
-const getWidth = () => {
-  return Dimensions.get('window').width;
-}
-
-const getHeight = () => {
-  return Dimensions.get('window').height;
-}
-
 
 const styles = StyleSheet.create({
   wrapper:{
@@ -129,17 +143,33 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold'
   },
-  textInput: {
+  textInputOnBlur: {
     alignSelf: 'stretch',
     padding: 16,
     marginBottom: 20,
     backgroundColor: '#9152f8',
-    color: 'white'
+    color: 'white',
+    borderColor: '#d6d7da',
+    borderWidth: 0.5,
+    borderRadius: 50
+  },
+  textInputOnFocus: {
+    alignSelf: 'stretch',
+    padding: 16,
+    marginBottom: 20,
+    backgroundColor: 'white',
+    color: 'black',
+    borderColor: '#d6d7da',
+    borderWidth: 0.5,
+    borderRadius: 50
   },
   button: {
-    alignSelf: 'stretch',
+    width: 150,
     backgroundColor: 'white',
+    top: 50,
     padding: 20,
     alignItems: 'center',
+    borderRadius: 50,
+    justifyContent: 'center'
   },
 });

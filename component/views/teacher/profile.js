@@ -6,21 +6,23 @@ export default class Profile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: true,
             name: '',
             dob: '',
             phone: '',
             email: '',
             identityID: '',
-            credits: 0,
-            englishLevel: '',
-            schoolYear: 0,
             specialty: ''
         }
     }
 
+    //load data when navigated to this component
     componentDidMount(){
+        console.log('profile entered');
+        //get item from async storage
         AsyncStorage.getItem('user').then((preData) => {
             let data = JSON.parse(preData);
+            console.log(data);
             let dob = data.user.dob.slice(0, 10);
             this.setState({
                 name: data.user.name,
@@ -28,15 +30,14 @@ export default class Profile extends React.Component {
                 phone: data.user.phone,
                 email: data.user.email,
                 identityID: data.user.identityID,
-                credits: data.user.info.credits,
-                englishLevel: data.user.info.englishLevel,
-                schoolYear: data.user.info.schoolYear,
-                specialty: data.user.info.speciality.name,
+                specialty: data.user.info.division.name,
+                loading: false
             });
         }).catch((err) => {
             console.log('')
         });
     }
+
 
     render() {
             return (
@@ -54,10 +55,7 @@ export default class Profile extends React.Component {
                         <Text style={styles.textLabel}>Ngày sinh: <Text style={styles.text}>{this.state.dob}</Text></Text>
                         <Text style={styles.textLabel}>Số điện thoại: <Text style={styles.text}>{this.state.phone}</Text></Text>
                         <Text style={styles.textLabel}>E-mail: <Text style={styles.text}>{this.state.email}</Text></Text>
-                        <Text style={styles.textLabel}>Khóa: <Text style={styles.text}>{this.state.schoolYear}</Text></Text>
-                        <Text style={styles.textLabel}>Trình độ tiếng anh: <Text style={styles.text}>{this.state.englishLevel}</Text></Text>
                         <Text style={styles.textLabel}>Chuyên ngành: <Text style={styles.text}>{this.state.specialty}</Text></Text>
-                        <Text style={styles.textLabel}>Số tín chỉ tích lũy: <Text style={styles.text}>{this.state.credits}</Text></Text>
                     </View>
                 </View>
             )

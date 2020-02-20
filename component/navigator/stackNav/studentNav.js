@@ -6,7 +6,7 @@ import studentResult from '../../views/student/result';
 import studentSchedule from '../../views/student/schedule';
 import studentSchoolSchedule from '../../views/student/schoolSchedule';
 
-const loginNav = createStackNavigator({
+const studentNav = createStackNavigator({
   Login: {
     screen: Login
   },
@@ -26,4 +26,4 @@ const loginNav = createStackNavigator({
   headerMode: 'none'
 })
 
-export default loginNav;
+export default studentNav;

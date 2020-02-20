@@ -180,9 +180,6 @@ export default class schoolSchedule extends React.Component {
                     <Left style={styles.menuContainer}>
                         <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
                     </Left>
-                    <View style={styles.headerInfoContainer}>
-                        <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu toàn trường</Text>
-                    </View>
                 </Header>
                 <Dropdown label='Chọn kỳ học' data={this.state.semesterFilter} onChangeText={this.onChangeSemester}/>
                 <Dropdown label='Chọn nhóm' data={this.state.studentGroupFilter} onChangeText={this.onChangeGroup}/>
@@ -221,15 +218,10 @@ const styles = StyleSheet.create({
         height: 70,
         position: 'relative'
     },
-    headerInfoContainer: {
-        flex: 1,
-        alignItems: 'center',
-        alignSelf: 'center'
-    },
     menuContainer: {
         position: 'absolute',
         left: 20,
-        alignSelf: 'center',
+        bottom: 10,
         flex: 1
     },
     infoContainer: {
@@ -243,4 +235,3 @@ const styles = StyleSheet.create({
     tableRow: { height: 40, backgroundColor: '#E7E6E1'}
 
 });
-

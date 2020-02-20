@@ -103,29 +103,29 @@ export default class Result extends React.Component {
     }
 
     getScheduleData(userID, semester, year, token){
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + token,
-            }
-        }).then((res) => res.json()).then((data) => {
-            if(data == null){
-                this.setState({
-                    list: [],
-                    subjectList: []
-                })
-                alert('Không có dữ liệu thời khóa biểu của kỳ ' + semester );
-            }
-            else{
-                let holder = this.listProcessor(data.list)
-                this.setState({
-                    list: [...data.list],
-                    subjectList: [...holder]
-                });
-            }
-        }).done();
+        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/teacher/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
+        // fetch(url, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Authorization': 'Bearer ' + token,
+        //     }
+        // }).then((res) => res.json()).then((data) => {
+        //     if(data == null){
+        //         this.setState({
+        //             list: [],
+        //             subjectList: []
+        //         })
+        //         alert('Không có dữ liệu thời khóa biểu của kỳ ' + semester );
+        //     }
+        //     else{
+        //         let holder = this.listProcessor(data.list)
+        //         this.setState({
+        //             list: [...data.list],
+        //             subjectList: [...holder]
+        //         });
+        //     }
+        // }).done();
     }
 
     onChangeText(semester){

@@ -13,8 +13,8 @@ export default class Result extends React.Component {
             totalCredits: 0,
             list: [],
             processedList: [],
-            tableHeader: ['Mã học phần', 'Tên học phần', 'Số tín chỉ', 'Điểm'],
-            widthArr: [100,200,100,100]
+            tableHeader: ['Mã học phần', 'Tên học phần', 'Số tín chỉ'],
+            widthArr: [100,200,100]
         }
     }
 
@@ -25,7 +25,7 @@ export default class Result extends React.Component {
         AsyncStorage.getItem('user').then((preData) => {
             const postData = JSON.parse(preData);
             console.log(postData);
-            let url = 'https://dangkyhoctlu.herokuapp.com/api/result/student/' + postData.user.info._id + '?speciality=' + postData.user.info.speciality._id;
+            let url = 'https://dangkyhoctlu.herokuapp.com/api/result/teacher/' + postData.user.info._id + '?speciality=' + postData.user.info.speciality._id;
             fetch(url, {
                 method: 'GET',
                 headers: {
@@ -33,6 +33,7 @@ export default class Result extends React.Component {
                     'Authorization': 'Bearer ' + postData.token,
                 }
             }).then((res) => res.json()).then((data) => {
+                console.log(data);
                 let holder = this.listProcessor(data.results)
                 this.setState({
                     userName: postData.user.name,
@@ -76,23 +77,19 @@ export default class Result extends React.Component {
                         <Left style={styles.menuContainer}>
                             <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
                         </Left>
-                        <View style={styles.headerInfoContainer}>
-                            <Text style={{color: '#fff', fontSize: 25}}>Bảng điểm</Text>
-                        </View>
                     </Header>
                     <View style={styles.infoContainer}>
                         <Text style={styles.Text}>Họ tên: {this.state.userName}</Text>
-                        <Text style={styles.Text}>MSV: {this.state.identityID}</Text>
-                        <Text style={styles.Text}>Tổng số tín chỉ tích lũy: {this.state.totalCredits}</Text>
+                        <Text style={styles.Text}>MGV: {this.state.identityID}</Text>
                     </View>
                     <View style={styles.tableContainerMain}>
                         <ScrollView horizontal={true}>
                             <View style={styles.resultTable}>
-                                <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                                <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                                     <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
                                 </Table>
                                 <ScrollView style={styles.tableDataWrapper}>
-                                    <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                                    <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                                         {
                                             this.state.processedList.map((rowData, index) => (
                                                 <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
@@ -118,15 +115,10 @@ const styles = StyleSheet.create({
         height: 70,
         position: 'relative'
     },
-    headerInfoContainer: {
-        flex: 1,
-        alignItems: 'center',
-        alignSelf: 'center'
-    },
     menuContainer: {
         position: 'absolute',
         left: 20,
-        alignSelf: 'center',
+        bottom: 10,
         flex: 1
     },
     infoContainer: {
@@ -140,7 +132,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     tableContainer: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    tableHeader: { height: 50, backgroundColor: '#9152f8' },
+    tableHeader: { height: 50, backgroundColor: '#537791' },
     tableText: { textAlign: 'center', fontWeight: '100' },
     tableDataWrapper: { marginTop: -1 },
     tableRow: { height: 40, backgroundColor: '#E7E6E1'}

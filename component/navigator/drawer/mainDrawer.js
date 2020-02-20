@@ -4,15 +4,17 @@ import { createAppContainer } from 'react-navigation';
 //import custom drawer
 import customDrawer from './mainCustomDrawer';
 
-//import general-use component
 import studentNav from '../stackNav/studentNav';
+import teacherNav from '../stackNav/teacherNav'
 
 
 const DrawerNavigator = createDrawerNavigator({
   studentNav: {
     screen: studentNav
   },
-
+  teacherNav: {
+    screen: teacherNav
+  }
 }, {
   gestureEnabled: false,
   drawerLockMode: 'locked-closed',
