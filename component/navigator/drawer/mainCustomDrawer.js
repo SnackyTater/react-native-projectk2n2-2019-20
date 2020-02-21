@@ -19,13 +19,17 @@ export default class subDrawer extends Component {
   }
 
   componentDidMount(){
-    console.log('blin')
-    AsyncStorage.getItem('user').then((preData) => {
-      const postData = JSON.parse(preData);
-      this.setState({
-        role: postData.user.role,
+    let loop = setInterval(() => {
+      AsyncStorage.getItem('user').then((preData) => {
+        if(preData !== null){
+          const postData = JSON.parse(preData);
+          this.setState({
+            role: postData.user.role,
+          })
+        }
       })
-    })
+    },500)
+    
     console.log(this.state.role)
   }
 

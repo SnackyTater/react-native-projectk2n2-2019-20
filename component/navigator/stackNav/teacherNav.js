@@ -5,6 +5,7 @@ import teacherProfile from '../../views/teacher/profile';
 import teacherResult from '../../views/teacher/result';
 import teacherSchedule from '../../views/teacher/schedule';
 import teacherSchoolSchedule from '../../views/teacher/schoolSchedule';
+import drawer from '../drawer/mainCustomDrawer'
 
 const teacherNav = createStackNavigator(
   {
@@ -22,6 +23,9 @@ const teacherNav = createStackNavigator(
     },
     teacherSchoolSchedule: {
       screen: teacherSchoolSchedule
+    },
+    drawer: {
+      screen: drawer
     }
   },{
     headerMode: 'none'

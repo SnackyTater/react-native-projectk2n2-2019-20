@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image, Dimensions } from 'react-native';
+import { createLoginSession } from '../../../utils/utility';
 
 
 export default class Login extends React.Component {
@@ -9,7 +10,7 @@ export default class Login extends React.Component {
         username: '',
         password: '',
         usernameFocus: false,
-        password: false
+        passwordFocus: false
       }
     }
 
@@ -49,7 +50,10 @@ export default class Login extends React.Component {
           }
         }else {
             if((data.user.username == this.state.username.toUpperCase()) || (data.user.username == this.state.username)) {
+
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
+              createLoginSession();
+
               if(data.user.role == 'sv'){
                 this.props.navigation.navigate('studentProfile');
               }

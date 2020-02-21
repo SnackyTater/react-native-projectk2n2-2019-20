@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image} from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 
 export default class Loading extends React.Component {
@@ -17,7 +17,7 @@ export default class Loading extends React.Component {
                     </Left>
                 </Header>
                 <View style={styles.body}>
-                    <Text style={styles.text}>Đang tải dữ liệu</Text>
+                    <Image style = {styles.img} source={require('../../../assets/splash.gif')}/>
                 </View>
             </View>
         )

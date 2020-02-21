@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
+import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility'
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -13,8 +14,9 @@ export default class Result extends React.Component {
             sessionToken: '',
             currentSemester: 0,
             currentYear: '',
-            list: [],
-            subjectList: [],
+
+            originalList: [],
+            processedList: [],
 
             //table setting
             tableHeader: ['Tên lớp', 'Phòng', 'Thứ', 'Ca'],
@@ -28,108 +30,60 @@ export default class Result extends React.Component {
     //load data when navigated to this component
     componentDidMount(){
         AsyncStorage.getItem('user').then((preData) => {
-            //prepare data pre-fetch
-            const postData = JSON.parse(preData);
-            let holder = this.getCurrentSemesterAndYear();
-            this.setState({
-                userID: postData.user.info._id,
-                sessionToken: postData.token,
-                currentSemester: holder.currentSemester,
-                currentYear: holder.currentYear
-            })
+            const data = JSON.parse(preData);
             
-            //due to not adding enough data currentSemester will be set as 1
-            this.setState({
-                currentSemester: 1
-            })
+            //initiate state time value
+            let currentSchoolYear = getCurrentSemesterAndYear(getTimeNow());
+            //initiate get school schedule
+            this.getSchedule(data.user.info._id, currentSchoolYear.currentYear, currentSchoolYear.currentSemester, data.token)
 
-            //fetch data from server
-            this.getScheduleData(this.state.userID, this.state.currentSemester, this.state.currentYear, this.state.sessionToken);
+            this.setState({
+                userID : data.user.info._id,
+                sessionToken: data.token,
+                currentSemester: currentSchoolYear.currentSemester,
+                currentYear: currentSchoolYear.currentYear,
+            })
 
         }).catch((err) => {console.log('')});
     }
 
-    getCurrentSemesterAndYear(){
-        let date = new Date();
-        let today = {
-            date: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear()
-        };
-        let schoolTime = {
-            currentYear: '',
-            currentSemester: 1,
-        }
-        if(today.month >= 9 && today.month <= 11){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 1;
-        }
-        if(today.month == 12){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month <=3){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month >= 4 && today.month <=6){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 3;
-        }
-        return schoolTime;
+    getSchedule(userID, year, semester, token){
+        fetch('https://dangkyhoctlu.herokuapp.com/api/school-schedule/instructor-schedule/'+ userID +'?year=' + year + '&semester=' + semester, {
+                method: 'GET',
+                headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
+                }
+            }).then((res) => res.json()).then((Schedule) => {
+                 let processedList = this.listProcessor(Schedule)
+                this.setState({
+                    originalList: [...Schedule],
+                    processedList: [...processedList]
+                })
+        }).done();
     }
+
 
     listProcessor(rawList){
-            let processedList = [];
-            var totalCredits = 0;
-            rawList.map((listItem) => {
-                //setup variable
-                let holder = [];
-                let shift = listItem.from.name + '-' + listItem.to.name;
+        let processedList = rawList.map((listItem) => {
+            //setup variable
+            let holder = [];
+            let shift = listItem.from.name + '-' + listItem.to.name;
 
-                //push to holder
-                holder.push(listItem.class.name);
-                holder.push(listItem.classRoom.name);
-                holder.push(listItem.dayOfWeek);
-                holder.push(shift);
+            //push to holder
+            holder.push(listItem.class.name);
+            holder.push(listItem.classRoom.name);
+            holder.push(listItem.dayOfWeek);
+            holder.push(shift);
 
-                //push to processed list
-                processedList.push(holder);
-            })
-            this.setState({
-                totalCredits: totalCredits
-            })
-            return processedList;
-    }
-
-    getScheduleData(userID, semester, year, token){
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/teacher/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
-        // fetch(url, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Authorization': 'Bearer ' + token,
-        //     }
-        // }).then((res) => res.json()).then((data) => {
-        //     if(data == null){
-        //         this.setState({
-        //             list: [],
-        //             subjectList: []
-        //         })
-        //         alert('Không có dữ liệu thời khóa biểu của kỳ ' + semester );
-        //     }
-        //     else{
-        //         let holder = this.listProcessor(data.list)
-        //         this.setState({
-        //             list: [...data.list],
-        //             subjectList: [...holder]
-        //         });
-        //     }
-        // }).done();
+            //push to processed list
+            return holder
+        })
+        return processedList;
     }
 
     onChangeText(semester){
-        this.getScheduleData(this.state.userID , semester, this.state.currentYear, this.state.sessionToken)
+        this.getSchedule(this.state.originalList, this.state.currentYear, semester, this.state.sessionToken)
         console.disableYellowBox = true;
     }
 
@@ -155,7 +109,7 @@ export default class Result extends React.Component {
                                 <ScrollView style={styles.tableDataWrapper}>
                                     <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
                                         {
-                                            this.state.subjectList.map((rowData, index) => (
+                                            this.state.processedList.map((rowData, index) => (
                                                 <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
                                             ))
                                         }
