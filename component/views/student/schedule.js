@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
+import { getCurrentSemesterAndYear, getTimeNow } from '../../../utils/utility';
+import Loading from '../general/loading';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -13,6 +15,7 @@ export default class Result extends React.Component {
             sessionToken: '',
             currentSemester: 0,
             currentYear: '',
+
             list: [],
             subjectList: [],
 
@@ -22,61 +25,29 @@ export default class Result extends React.Component {
 
             //drop down list setting
             filterOptionSemester: [{value: 1}, {value: 2}, {value: 3}],
+
+            loading: true
         }
     }
 
     //load data when navigated to this component
     componentDidMount(){
+        console.log('blin1')
         AsyncStorage.getItem('user').then((preData) => {
             //prepare data pre-fetch
             const postData = JSON.parse(preData);
-            let holder = this.getCurrentSemesterAndYear();
+            let holder = getCurrentSemesterAndYear(getTimeNow());
             this.setState({
                 userID: postData.user.info._id,
                 sessionToken: postData.token,
                 currentSemester: holder.currentSemester,
                 currentYear: holder.currentYear
             })
-            
-            //due to not adding enough data currentSemester will be set as 1
-            this.setState({
-                currentSemester: 1
-            })
-
+            console.log('blin2')
             //fetch data from server
             this.getScheduleData(this.state.userID, this.state.currentSemester, this.state.currentYear, this.state.sessionToken);
 
         }).catch((err) => {console.log('')});
-    }
-
-    getCurrentSemesterAndYear(){
-        let date = new Date();
-        let today = {
-            date: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear()
-        };
-        let schoolTime = {
-            currentYear: '',
-            currentSemester: 1,
-        }
-        if(today.month >= 9 && today.month <= 11){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 1;
-        }
-        if(today.month == 12){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month <=3){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month >= 4 && today.month <=6){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 3;
-        }
-        return schoolTime;
     }
 
     listProcessor(rawList){
@@ -103,6 +74,7 @@ export default class Result extends React.Component {
     }
 
     getScheduleData(userID, semester, year, token){
+        console.log('blin3')
         let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
         fetch(url, {
             method: 'GET',
@@ -111,41 +83,49 @@ export default class Result extends React.Component {
                 'Authorization': 'Bearer ' + token,
             }
         }).then((res) => res.json()).then((data) => {
+            console.log('blin4')
             if(data == null){
-                this.setState({
-                    list: [],
-                    subjectList: []
-                })
                 alert('Không có dữ liệu thời khóa biểu của kỳ ' + semester );
+                this.setState({
+                    loading: false
+                })
             }
             else{
+                console.log(data)
                 let holder = this.listProcessor(data.list)
                 this.setState({
                     list: [...data.list],
-                    subjectList: [...holder]
+                    subjectList: [...holder],
+                    loading: false
                 });
             }
         }).done();
     }
 
     onChangeText(semester){
+        this.setState({
+            loading: true
+        })
         this.getScheduleData(this.state.userID , semester, this.state.currentYear, this.state.sessionToken)
         console.disableYellowBox = true;
     }
 
     render() {
         return (
-                <View style={styles.general}>
-                    <Header style={styles.headerContainer}>
-                        <Left style={styles.menuContainer}>
-                            <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
-                        </Left>
-                        <View style={styles.headerInfoContainer}>
-                            <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu</Text>
-                        </View>
-                    </Header>
-                    <Text style={{fontSize: 20}}>Chọn kỳ học</Text>
-                    <Dropdown label={this.state.currentSemester} data={this.state.filterOptionSemester} onChangeText={this.onChangeText}/>
+            <View style={styles.general}>
+
+                <Header style={styles.headerContainer}>
+                    <Left style={styles.menuContainer}>
+                        <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
+                    </Left>
+                    <View style={styles.headerInfoContainer}>
+                        <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu</Text>
+                    </View>
+                </Header>
+
+                <Dropdown label='chọn kỳ học' data={this.state.filterOptionSemester} onChangeText={this.onChangeText}/>
+                {
+                    (this.state.loading) ? <Loading/> : 
                     <View style={styles.tableContainer}>
                         <ScrollView horizontal={true}>
                             <View style={styles.resultTable}>
@@ -162,9 +142,9 @@ export default class Result extends React.Component {
                                     </Table>
                                 </ScrollView>
                             </View>
-                            {/*table end here */}
                         </ScrollView>
                     </View>
+                }
             </View>
         )
     }

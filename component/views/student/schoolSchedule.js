@@ -3,6 +3,8 @@ import { StyleSheet, View, AsyncStorage, ScrollView, Text } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
+import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility';
+import Loading from '../general/loading'
 
 export default class schoolSchedule extends React.Component {
     constructor(props) {
@@ -28,23 +30,15 @@ export default class schoolSchedule extends React.Component {
             schoolYearFilter: [{value: '2018-2019'}],
             semesterFilter: [{value: 1}, {value: 2}, {value: 3}],
             studentGroupFilter: [{value: 1}, {value: 2}, {value: 3}],
+
+            loading: true
         }
     }
 
     componentDidMount(){
         AsyncStorage.getItem('user').then((preData) => {
             const data = JSON.parse(preData);
-
-            //initiate state filter value
-            this.getCurrentSemesterAndYear()
-
-            //bruh
-            this.setState({
-                studentGroup: 2,
-                semester: 1
-            })
-
-            //console.log(this.state)
+            
             fetch('https://dangkyhoctlu.herokuapp.com/api/school-schedule/all', {
                 method: 'GET',
                 headers: {
@@ -52,49 +46,24 @@ export default class schoolSchedule extends React.Component {
                 'Authorization': 'Bearer ' + data.token,
                 }
             }).then((res) => res.json()).then((Schedule) => {
+                //inititae filter
+                let schoolYearHolder = getCurrentSemesterAndYear(getTimeNow());
                 let schoolYearFilter = this.inititateSchoolYearFilter(Schedule);
-                console.log('blin1')
-                let processedList = this.listFilter(Schedule, this.state.semester, this.state.studentGroup, this.state.schoolYear)
+                
+                //filter original list
+                let processedList = this.listFilter(Schedule, schoolYearHolder.currentSemester, this.state.studentGroup, schoolYearHolder.currentYear)
+
                 this.setState({
                     list: [...Schedule],
                     schoolYearFilter: [...schoolYearFilter],
-                    processedList: [...processedList]
+                    processedList: [...processedList],
+                    studentGroup: 2,
+                    schoolYear: schoolYearHolder.currentYear,
+                    semester: schoolYearHolder.currentSemester,
+                    loading: false
                 })
-                console.log(this.state.processedList)
             }).done();
         }).catch((err) => {console.log('')});
-    }
-
-    getCurrentSemesterAndYear(){
-        let date = new Date();
-        let today = {
-            month: date.getMonth(),
-            year: date.getFullYear()
-        };
-        let schoolTime = {
-            currentYear: '',
-            currentSemester: 1,
-        }
-        if(today.month >= 9 && today.month <= 11){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 1;
-        }
-        if(today.month == 12){
-            schoolTime.currentYear = today.year + '-' + (today.year+1);
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month <=3){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 2;
-        }
-        if(today.month >= 4 && today.month <=6){
-            schoolTime.currentYear = (today.year-1) + '-' + today.year;
-            schoolTime.currentSemester = 3;
-        }
-        this.setState({
-            schoolYear: schoolTime.currentYear,
-            semester: schoolTime.currentSemester
-        })
     }
 
     inititateSchoolYearFilter(rawList){
@@ -123,12 +92,14 @@ export default class schoolSchedule extends React.Component {
         let schoolYearFrom = schoolYear.slice(0,4);
         let SchoolYearTo = schoolYear.slice(5,10);
 
+        var count = 0;
         let processedList = rawList.map((listItem) => {
             if(listItem.semester == semester && listItem.studentGroup == group && listItem.year.from == schoolYearFrom && listItem.year.to == SchoolYearTo){
                 //setup variable 
                 let holder = [];
                 var shift = listItem.from.name + '-' + listItem.to.name;
 
+                count = count + 1;
                 //push to holder
                 holder.push(listItem.class.subject.subjectID);
                 holder.push(listItem.class.subject.name);
@@ -137,7 +108,11 @@ export default class schoolSchedule extends React.Component {
                 holder.push(shift);
                 holder.push(listItem.classRoom.name);
                 holder.push(listItem.class.subject.coefficient);
-                holder.push(listItem.instructor.user.name);
+                if (typeof listItem.instructor.user === "undefined"){
+                    holder.push('');
+                }else{
+                    holder.push(listItem.instructor.user.name);
+                }
 
                 //push to processed list
                 return holder
@@ -148,28 +123,40 @@ export default class schoolSchedule extends React.Component {
 
     onChangeSemester(semester){
         console.disableYellowBox = true;
+        this.setState({
+            loading: true
+        })
         let holder = this.listFilter(this.state.list, semester , this.state.studentGroup, this.state.schoolYear)
         this.setState({
             semester: semester,
-            processedList: [...holder]
+            processedList: [...holder],
+            loading: false,
         })
     }
 
     onChangeSchoolYear(year){
         console.disableYellowBox = true;
+        this.setState({
+            loading: true
+        })
         let holder = this.listFilter(this.state.list, this.state.semester , this.state.studentGroup, year)
         this.setState({
             schoolYear: year,
-            processedList: [...holder]
+            processedList: [...holder],
+            loading: false,
         })
     }
 
     onChangeGroup(group){
+        this.setState({
+            loading: true
+        })
         console.disableYellowBox = true;
         let holder = this.listFilter(this.state.list, this.state.semester , group, this.state.schoolYear)
         this.setState({
             studentGroup: group,
-            processedList: [...holder]
+            processedList: [...holder],
+            loading: false,
         })
     }
     
@@ -188,24 +175,25 @@ export default class schoolSchedule extends React.Component {
                 <Dropdown label='Chọn nhóm' data={this.state.studentGroupFilter} onChangeText={this.onChangeGroup}/>
                 <Dropdown label='Chọn năm học' data={this.state.schoolYearFilter} onChangeText={this.onChangeSchoolYear}/>
                 <View style={styles.infoContainer}>
-                    <ScrollView horizontal={true}>
-                        {/*table start here*/}
-                        <View>
-                            <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
-                            </Table>
-                            <ScrollView style={styles.tableDataWrapper}>
+                    {
+                        (this.state.loading)? <Loading/> : 
+                        <ScrollView horizontal={true}>
+                            <View>
                                 <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                    {
-                                        this.state.processedList.map((rowData, index) => (
-                                            <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
-                                        ))
-                                    }
+                                    <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
                                 </Table>
-                            </ScrollView>
-                        </View>
-                        {/*table end here */}
-                    </ScrollView>
+                                <ScrollView style={styles.tableDataWrapper}>
+                                    <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                                        {
+                                            this.state.processedList.map((rowData, index) => (
+                                                <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
+                                            ))
+                                        }
+                                    </Table>
+                                </ScrollView>
+                            </View>
+                        </ScrollView>
+                    }
                 </View>
             </View>
         )
@@ -238,7 +226,7 @@ const styles = StyleSheet.create({
     },
     tableContainer: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
     tableHeader: { height: 50, backgroundColor: '#9152f8' },
-    tableText: { textAlign: 'center', fontWeight: '100' },
+    tableText: {     fontWeight: '100' },
     tableDataWrapper: { marginTop: -1 },
     tableRow: { height: 40, backgroundColor: '#E7E6E1'}
 

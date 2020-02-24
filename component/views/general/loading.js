@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image} from 'react-native';
-import {Header, Left, Icon} from 'native-base';
+import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 
 export default class Loading extends React.Component {
     constructor(props) {
@@ -11,13 +10,8 @@ export default class Loading extends React.Component {
     render() {
         return (
             <View style={styles.general}>
-                <Header style={styles.header}>
-                    <Left style={styles.menuContainer}>
-                        <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
-                    </Left>
-                </Header>
                 <View style={styles.body}>
-                    <Image style = {styles.img} source={require('../../../assets/splash.gif')}/>
+                    <Image style = {styles.img} source={require('../../../assets/splash2.gif')}/>
                 </View>
             </View>
         )
@@ -25,24 +19,20 @@ export default class Loading extends React.Component {
     
 }
 
+const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = Math.round(Dimensions.get('window').height);
+
 const styles = StyleSheet.create({
     general: {
         flex: 1
     },
-    header: {
-        backgroundColor: '#9152f8',
-        height: 70
-    },
-    menuContainer: {
+    body: {
         flex: 1
     },
-    body: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    text: {
-        fontSize: 20,
-        color: 'black'
+    img: {
+        height: screenWidth*3/4,
+        width: screenWidth*3/4,
+        alignSelf: 'center',
+        top: screenHeight*1/5
     }
 });
