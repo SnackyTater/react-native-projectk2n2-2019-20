@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
-
+import Loading from '../general/loading';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -14,7 +14,8 @@ export default class Result extends React.Component {
             list: [],
             processedList: [],
             tableHeader: ['Mã học phần', 'Tên học phần', 'Số tín chỉ', 'Điểm'],
-            widthArr: [100,200,100,100]
+            widthArr: [100,200,100,100],
+            loading: true
         }
     }
 
@@ -38,7 +39,8 @@ export default class Result extends React.Component {
                     userName: postData.user.name,
                     identityID: postData.user.username,
                     list: [...data.results],
-                    processedList: holder
+                    processedList: holder,
+                    loading: false
                 });
             }).done();
         }).catch((err) => {console.log('')}); 
@@ -86,23 +88,24 @@ export default class Result extends React.Component {
                         <Text style={styles.Text}>Tổng số tín chỉ tích lũy: {this.state.totalCredits}</Text>
                     </View>
                     <View style={styles.tableContainerMain}>
-                        <ScrollView horizontal={true}>
-                            <View style={styles.resultTable}>
-                                <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                    <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
-                                </Table>
-                                <ScrollView style={styles.tableDataWrapper}>
+                        {
+                            (this.state.loading) ? <Loading/> : <ScrollView horizontal={true}>
+                                <View style={styles.resultTable}>
                                     <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                        {
-                                            this.state.processedList.map((rowData, index) => (
-                                                <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
-                                            ))
-                                        }
+                                        <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
                                     </Table>
-                                </ScrollView>
-                            </View>
-                            {/*table end here */}
-                        </ScrollView>
+                                    <ScrollView style={styles.tableDataWrapper}>
+                                        <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
+                                            {
+                                                this.state.processedList.map((rowData, index) => (
+                                                    <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
+                                                ))
+                                            }
+                                        </Table>
+                                    </ScrollView>
+                                </View>
+                            </ScrollView>
+                        }
                     </View>
             </View>
         )

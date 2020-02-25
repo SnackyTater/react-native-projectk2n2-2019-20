@@ -1,11 +1,10 @@
 import { createStackNavigator } from 'react-navigation-stack';
 
-import Login from '../../views/general/login';
-import studentProfile from '../../views/student/profile';
-import studentResult from '../../views/student/result';
-import studentSchedule from '../../views/student/schedule';
-import studentSchoolSchedule from '../../views/student/schoolSchedule';
-import drawer from '../drawer/mainCustomDrawer'
+import Login from '../../component/views/general/login';
+import studentProfile from '../../component/views/student/profile';
+import studentResult from '../../component/views/student/result';
+import studentSchedule from '../../component/views/student/schedule';
+import studentSchoolSchedule from '../../component/views/student/schoolSchedule';
 
 const studentNav = createStackNavigator({
   Login: {
@@ -23,9 +22,6 @@ const studentNav = createStackNavigator({
   studentSchoolSchedule: {
     screen: studentSchoolSchedule
   },
-  drawer: {
-    screen: drawer
-  }
 },{
   headerMode: 'none'
 })

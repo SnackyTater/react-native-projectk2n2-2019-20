@@ -2,10 +2,10 @@ import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createAppContainer } from 'react-navigation';
 
 //import custom drawer
-import customDrawer from './mainCustomDrawer';
+import customDrawer from '../../component/drawers/mainCustomDrawer';
 
 import studentNav from '../stackNav/studentNav';
-import teacherNav from '../stackNav/teacherNav'
+import teacherNav from '../stackNav/teacherNav';
 
 
 const DrawerNavigator = createDrawerNavigator({
