@@ -1,4 +1,0 @@
-- s?a label cho profile: thông tin 1 màu, label 1 màu
-- header có thông tin trang nào
-- ? drawer navigator khi dang ? component nào highlight component dó
-- s?a l?i th?i khóa bi?u toàn tru?ng

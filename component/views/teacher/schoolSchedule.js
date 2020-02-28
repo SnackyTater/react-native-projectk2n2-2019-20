@@ -137,7 +137,11 @@ export default class schoolSchedule extends React.Component {
                 holder.push(shift);
                 holder.push(listItem.classRoom.name);
                 holder.push(listItem.class.subject.coefficient);
-                holder.push(listItem.instructor.user.name);
+                if (typeof listItem.instructor.user === "undefined"){
+                    holder.push('');
+                }else{
+                    holder.push(listItem.instructor.user.name);
+                }
 
                 //push to processed list
                 return holder

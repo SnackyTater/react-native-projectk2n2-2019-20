@@ -44,7 +44,24 @@ export default class subDrawer extends Component {
       studentProfile: '#fff',
       studentResult: '#fff',
       studentSchedule: '#fff',
-      studentSchoolSchedule: '#fff'
+      studentSchoolSchedule: '#fff',
+      teacherProfile: '#fff',
+      teacherResult: '#fff',
+      teacherSchedule: '#fff',
+      teacherSchoolSchedule: '#fff',
+    })
+  }
+
+  defaultColor(){
+    this.setState({
+      studentProfile: '#9d65f7',
+      studentResult: '#fff',
+      studentSchedule: '#fff',
+      studentSchoolSchedule: '#fff',
+      teacherProfile: '#9d65f7',
+      teacherResult: '#fff',
+      teacherSchedule: '#fff',
+      teacherSchoolSchedule: '#fff',
     })
   }
 
@@ -54,7 +71,7 @@ export default class subDrawer extends Component {
         <View const style = {styles.container}>
           <View style = {styles.header}>
             <View style={styles.imageContainer}>
-              <Image style = {styles.img} source={require('../../../assets/LogoTLU.jpg')}/>
+              <Image style = {styles.img} source={require('../../assets/LogoTLU.jpg')}/>
             </View>
           </View>
           <ScrollView style={{top: 20}}>
@@ -95,7 +112,10 @@ export default class subDrawer extends Component {
               </TouchableOpacity>
             </View>
             <View style={{padding: 10}}>
-              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.Logout()}}>
+              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                this.Logout() 
+                this.defaultColor()
+              }}>
                 <Text style={styles.navText}>Đăng xuất</Text>
               </TouchableOpacity>
             </View>
@@ -108,11 +128,11 @@ export default class subDrawer extends Component {
         <View const style = {styles.container}>
           <View style = {styles.header}>
             <View style={styles.imageContainer}>
-            <Image style = {styles.img} source={require('../../../assets/LogoTLU.jpg')}/>
+            <Image style = {styles.img} source={require('../../assets/LogoTLU.jpg')}/>
             </View>
           </View>
           <ScrollView style={{top: 20}}>
-            <View style={{backgroundColor: this.state.studentProfile, padding: 10}}>
+            <View style={{backgroundColor: this.state.teacherProfile, padding: 10}}>
               <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
                     this.props.navigation.navigate('teacherProfile');
                     this.resetColor();
@@ -121,16 +141,7 @@ export default class subDrawer extends Component {
                 <Text style={styles.navText}>Thông tin cá nhân</Text>
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor: this.state.studentResult, padding: 10}}>
-              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
-                  this.props.navigation.navigate('teacherResult')
-                  this.resetColor();
-                  this.setState({teacherResult: '#9d65f7'});
-                }}>
-                <Text style={styles.navText}>Bảng điểm</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{backgroundColor: this.state.studentSchedule, padding: 10}}>
+            <View style={{backgroundColor: this.state.teacherSchedule, padding: 10}}>
               <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
                   this.props.navigation.navigate('teacherSchedule')
                   this.resetColor();
@@ -139,7 +150,7 @@ export default class subDrawer extends Component {
                 <Text style={styles.navText}>Lịch dạy</Text>
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor: this.state.studentSchoolSchedule, padding: 10}}>
+            <View style={{backgroundColor: this.state.teacherSchoolSchedule, padding: 10}}>
               <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
                   this.props.navigation.navigate('teacherSchoolSchedule')
                   this.resetColor();
@@ -149,7 +160,10 @@ export default class subDrawer extends Component {
               </TouchableOpacity>
             </View>
             <View style={{padding: 10}}>
-              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {this.Logout()}}>
+              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                this.Logout()
+                this.defaultColor()
+                }}>
                 <Text style={styles.navText}>Đăng xuất</Text>
               </TouchableOpacity>
             </View>
