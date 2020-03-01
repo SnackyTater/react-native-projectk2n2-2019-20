@@ -46,7 +46,7 @@ export default class Result extends React.Component {
     render() {
         return (
             <ScrollView horizontal={true}>
-                <View style={styles.resultTable}>
+                <View>
                     <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
                         <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
                     </Table>

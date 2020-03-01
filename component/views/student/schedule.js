@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, AsyncStorage, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage, TouchableOpacity, Dimensions } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Dropdown } from 'react-native-material-dropdown';
 
@@ -8,6 +8,7 @@ import { getCurrentSemesterAndYear, getTimeNow } from '../../../utils/utility';
 import Loading from '../general/loading';
 import TableList from '../general/tableList';
 import TableSchedule from '../general/tableSchedule'
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -121,37 +122,40 @@ export default class Result extends React.Component {
                 </Header>
 
                 <TouchableOpacity style={styles.filter} onPress={() => {this.filterStatusHandler(this.state.filterStatus)}}>
-                    <Text>Filter</Text>
+                    <Text style={{textAlign:'center', fontSize: 30, color: 'white'}}>Filter</Text>
                 </TouchableOpacity>
                 {
                     (this.state.filterStatus) ? (
-                        <View>
+                        <View style={styles.filterMenu}>
                             <Dropdown label='chọn kỳ học' data={this.state.filterOptionSemester} onChangeText={this.onChangeSemester}/>
                             <Dropdown label='chọn kiểu hiển thị' data={this.state.filterOptionTable} onChangeText={this.onChangeTable}/>
                         </View>
                     ) : (null)
                 }
-
-                {
-                    (this.state.loading) ? (
-                        <Loading/> 
-                    ) : (
-                        (this.state.tableType === 'danh sách') ? (
-                            <View style={styles.tableContainer}>
-                                <TableList list={this.state.list} tableHeader={this.state.tableHeader} widthArr={this.state.widthArr}/>
-                            </View>
+                <View style={styles.table}>
+                    {
+                        (this.state.loading) ? (
+                            <Loading/> 
                         ) : (
-                            <View style={styles.tableContainer}>
-                                <TableSchedule list={this.state.list}/>
-                            </View>
+                            (this.state.tableType === 'danh sách') ? (
+                                <View style={styles.tableContainer}>
+                                    <TableList list={this.state.list} tableHeader={this.state.tableHeader} widthArr={this.state.widthArr} option={'schedule'}/>
+                                </View>
+                            ) : (
+                                <ScrollView style={styles.tableContainer}>
+                                    <TableSchedule list={this.state.list}/>
+                                </ScrollView>
+                            )
+                            
                         )
-                        
-                    )
-                }
+                    }
+                </View>
             </View>
         )
     }
 }
+
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 const styles = StyleSheet.create({
     general: { flex: 1 },
@@ -173,12 +177,23 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         flex: 1
     },
-
+    table: {
+        position: 'absolute',
+        top: 280,
+    },
     //css for filter
     filter: {
+        position: 'absolute',
+        top: 80,
+        width: screenWidth,
         borderRadius: 50,
         height: 50,
         backgroundColor: '#9152f8'
     },
+    filterMenu: {
+        position: 'absolute',
+        top: 130,
+        width: screenWidth
+    }
     
 });
