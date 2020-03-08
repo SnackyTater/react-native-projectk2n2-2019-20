@@ -18,7 +18,12 @@ export default class Result extends React.Component {
     }
 
     async componentDidMount(){
-        let holder = this.listProcessor(this.props.list);
+        let filter = {
+            semester: this.props.semester,
+            group: this.props.group,
+            schoolYear: this.props.schoolYear
+        }
+        let holder = this.listProcessor(this.props.list, this.props.option, filter);
         this.setState({
             list: [...holder],
             tableHeader: this.props.tableHeader,
@@ -26,19 +31,56 @@ export default class Result extends React.Component {
         })
     }
 
-    listProcessor(rawList){
+    listProcessor(rawList, condition, filter){
+        if(condition === 'schedule'){
+            return this.personalScheduleProcessor(rawList)
+        } if(condition === 'schoolSchedule') {
+            return this.schoolScheduleProcessor(rawList, filter)
+        } if(condition === 'result') {
+
+        }
+    }
+
+    personalScheduleProcessor(rawList){
         let processedList = rawList.map((listItem) => {
-            //setup variable
-            let holder = [];
             let shift = listItem.from.name + '-' + listItem.to.name;
+            return [listItem.class.name, listItem.classRoom.name, listItem.dayOfWeek, shift]
+        })
+        return processedList;
+    }
 
-            //push to holder
-            holder.push(listItem.class.name);
-            holder.push(listItem.classRoom.name);
-            holder.push(listItem.dayOfWeek);
-            holder.push(shift);
+    schoolScheduleProcessor(rawList, filter){
+        let schoolYearFrom = filter.schoolYear.slice(0,4);
+        let SchoolYearTo = filter.schoolYear.slice(5,10);
 
-            return holder
+        var count = 0;
+        let processedList = rawList.map((listItem) => {
+            if(listItem.semester == filter.semester && listItem.studentGroup == filter.group && listItem.year.from == schoolYearFrom && listItem.year.to == SchoolYearTo){
+                if(count >= 100){
+                    return null;
+                }
+                //setup variable 
+                let holder = [];
+                var shift = listItem.from.name + '-' + listItem.to.name;
+
+                count = count + 1;
+                //push to holder
+                holder.push(listItem.class.subject.subjectID);
+                holder.push(listItem.class.subject.name);
+                holder.push(listItem.class.name);
+                holder.push(listItem.dayOfWeek);
+                holder.push(shift);
+                holder.push(listItem.classRoom.name);
+                holder.push(listItem.class.subject.coefficient);
+                if (typeof listItem.instructor.user === "undefined"){
+                    holder.push('');
+                }else{
+                    holder.push(listItem.instructor.user.name);
+                }
+
+                //push to processed list
+                return holder
+            }
         })
         return processedList;
     }

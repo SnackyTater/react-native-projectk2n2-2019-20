@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, AsyncStorage, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Dropdown } from 'react-native-material-dropdown';
 
@@ -7,8 +7,7 @@ import { getCurrentSemesterAndYear, getTimeNow } from '../../../utils/utility';
 
 import Loading from '../general/loading';
 import TableList from '../general/tableList';
-import TableSchedule from '../general/tableSchedule'
-import { ScrollView } from 'react-native-gesture-handler';
+import TableSchedule from '../general/tableSchedule';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -16,11 +15,15 @@ export default class Result extends React.Component {
         this.onChangeSemester = this.onChangeSemester.bind(this)
         this.onChangeTable = this.onChangeTable.bind(this)
         this.state = {
+            //user info
             userID: '',
             sessionToken: '',
+
+            //school time info
             currentSemester: 0,
             currentYear: '',
 
+            //list holder
             list: [],
 
             //filter setting
@@ -30,6 +33,7 @@ export default class Result extends React.Component {
             tableType: 'danh sách',
 
             //table setting
+            tableStatus: 150,
             tableHeader: ['Tên lớp', 'Phòng', 'Thứ', 'Ca'],
             widthArr: [200,100,100,100],
 
@@ -84,11 +88,13 @@ export default class Result extends React.Component {
     filterStatusHandler(status){
         (status) ? (
             this.setState({
-                filterStatus: false
+                filterStatus: false,
+                tableStatus: 150
             })
         ) : (
             this.setState({
-                filterStatus: true
+                filterStatus: true,
+                tableStatus: 210
             })
         )
     }
@@ -132,7 +138,7 @@ export default class Result extends React.Component {
                         </View>
                     ) : (null)
                 }
-                <View style={styles.table}>
+                <ScrollView style={{flex: 1, top: this.state.tableStatus}}>
                     {
                         (this.state.loading) ? (
                             <Loading/> 
@@ -149,7 +155,7 @@ export default class Result extends React.Component {
                             
                         )
                     }
-                </View>
+                </ScrollView>
             </View>
         )
     }
@@ -185,15 +191,18 @@ const styles = StyleSheet.create({
     filter: {
         position: 'absolute',
         top: 80,
-        width: screenWidth,
+        width: screenWidth*4/5,
         borderRadius: 50,
         height: 50,
-        backgroundColor: '#9152f8'
+        backgroundColor: '#9152f8',
+        alignSelf: 'center'
     },
     filterMenu: {
         position: 'absolute',
         top: 130,
         width: screenWidth
+    },
+    tableContainer: {
+        flex: 1
     }
-    
 });

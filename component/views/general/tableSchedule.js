@@ -8,15 +8,13 @@ export default class Result extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            //
+            //lists
             list: [],
             dummyList: [],
 
             //table setting
-            // tableHeader: ['', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
-            // titleHeader: ['1','2','3','4','5','6','7','8','9','10'],
             heightArr: [35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35],
-            widthArr: [100, 100, 100, 100, 100, 100, 100, 100],
+            widthArr: [110, 110, 110, 110, 110, 110, 110, 110],
             tableHead: ['', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
             tableTitle: ['1','2','3','4','5','6','7','8','9','10'],
             tableData: []
@@ -100,7 +98,7 @@ export default class Result extends React.Component {
                         }
                         return (
                             <View style={{height: (35*duration)-1, width: 99, position: 'absolute', backgroundColor: '#9152f8', left: (101*dayOfWeek)-leftConfig, top: 41+(35*start)}}>
-                                <View>
+                                <View style={styles.subjectInfoContainer}>
                                     <Text style={{color: 'white', textAlign: 'center'}}>{item[0]}</Text>
                                     <Text style={{color: 'white', textAlign: 'center'}}>{item[1]}</Text>
                                 </View>
@@ -119,5 +117,10 @@ const styles = StyleSheet.create({
     wrapper: { flexDirection: 'row', width: 800, height: 350},
     title: { flex: 1, backgroundColor: '#9152f8'},
     row: {  height: 35  },
-    text: { textAlign: 'center', color: 'white' }
+    text: { textAlign: 'center', color: 'white' },
+    subjectInfoContainer: {    
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    }
 });

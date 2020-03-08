@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
-import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import { Table, Row} from 'react-native-table-component';
 import Loading from '../general/loading';
 
 export default class Result extends React.Component {

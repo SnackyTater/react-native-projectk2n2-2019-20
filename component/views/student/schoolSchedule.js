@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, AsyncStorage, ScrollView, Text } from 'react-native';
+import { StyleSheet, View, AsyncStorage, Text , TouchableOpacity, Dimensions} from 'react-native';
 import {Header, Left, Icon} from 'native-base';
-import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
+
 import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility';
-import Loading from '../general/loading'
+
+import Loading from '../general/loading';
+import TableList from '../general/tableList';
 
 export default class schoolSchedule extends React.Component {
     constructor(props) {
@@ -20,7 +22,6 @@ export default class schoolSchedule extends React.Component {
 
             //lists
             list: [],
-            processedList: [],
 
             //table settings
             tableHeader: ['Mã môn', 'Tên môn', 'Tên lớp', 'Thứ', 'Ca', 'Phòng học', 'Tín chỉ', 'Giáo viên'],
@@ -31,6 +32,9 @@ export default class schoolSchedule extends React.Component {
             semesterFilter: [{value: 1}, {value: 2}, {value: 3}],
             studentGroupFilter: [{value: 1}, {value: 2}, {value: 3}],
 
+            //component status
+            filterStatus: false,
+            tableStatus: 100,
             loading: true
         }
     }
@@ -49,14 +53,10 @@ export default class schoolSchedule extends React.Component {
                 //inititae filter
                 let schoolYearHolder = getCurrentSemesterAndYear(getTimeNow());
                 let schoolYearFilter = this.inititateSchoolYearFilter(Schedule);
-                
-                //filter original list
-                let processedList = this.listFilter(Schedule, schoolYearHolder.currentSemester, this.state.studentGroup, schoolYearHolder.currentYear)
 
                 this.setState({
                     list: [...Schedule],
                     schoolYearFilter: [...schoolYearFilter],
-                    processedList: [...processedList],
                     studentGroup: 2,
                     schoolYear: schoolYearHolder.currentYear,
                     semester: schoolYearHolder.currentSemester,
@@ -88,37 +88,18 @@ export default class schoolSchedule extends React.Component {
         return holder;
     }
 
-    listFilter(rawList, semester, group, schoolYear){
-        let schoolYearFrom = schoolYear.slice(0,4);
-        let SchoolYearTo = schoolYear.slice(5,10);
-
-        var count = 0;
-        let processedList = rawList.map((listItem) => {
-            if(listItem.semester == semester && listItem.studentGroup == group && listItem.year.from == schoolYearFrom && listItem.year.to == SchoolYearTo){
-                //setup variable 
-                let holder = [];
-                var shift = listItem.from.name + '-' + listItem.to.name;
-
-                count = count + 1;
-                //push to holder
-                holder.push(listItem.class.subject.subjectID);
-                holder.push(listItem.class.subject.name);
-                holder.push(listItem.class.name);
-                holder.push(listItem.dayOfWeek);
-                holder.push(shift);
-                holder.push(listItem.classRoom.name);
-                holder.push(listItem.class.subject.coefficient);
-                if (typeof listItem.instructor.user === "undefined"){
-                    holder.push('');
-                }else{
-                    holder.push(listItem.instructor.user.name);
-                }
-
-                //push to processed list
-                return holder
-            }
-        })
-        return processedList;
+    filterStatusHandler(status){
+        (status) ? (
+            this.setState({
+                filterStatus: false,
+                tableStatus: 100
+            })
+        ) : (
+            this.setState({
+                filterStatus: true,
+                tableStatus: 280
+            })
+        )
     }
 
     onChangeSemester(semester){
@@ -171,34 +152,42 @@ export default class schoolSchedule extends React.Component {
                         <Text style={{color: '#fff', fontSize: 20}}>Thời khóa biểu toàn trường</Text>
                     </View>
                 </Header>
-                <Dropdown label='Chọn kỳ học' data={this.state.semesterFilter} onChangeText={this.onChangeSemester}/>
-                <Dropdown label='Chọn nhóm' data={this.state.studentGroupFilter} onChangeText={this.onChangeGroup}/>
-                <Dropdown label='Chọn năm học' data={this.state.schoolYearFilter} onChangeText={this.onChangeSchoolYear}/>
-                <View style={styles.infoContainer}>
+                <TouchableOpacity style={styles.filter} onPress={() => {this.filterStatusHandler(this.state.filterStatus)}}>
+                    <Text style={{textAlign:'center', fontSize: 30, color: 'white'}}>Filter</Text>
+                </TouchableOpacity>
+                {
+                    (this.state.filterStatus) ? (
+                        <View style={styles.filterMenu}>
+                            <Dropdown label='Chọn kỳ học' data={this.state.semesterFilter} onChangeText={this.onChangeSemester}/>
+                            <Dropdown label='Chọn nhóm' data={this.state.studentGroupFilter} onChangeText={this.onChangeGroup}/>
+                            <Dropdown label='Chọn năm học' data={this.state.schoolYearFilter} onChangeText={this.onChangeSchoolYear}/>
+                        </View>
+                    ) : (null)
+                }
+
+                <View style={{top: this.state.tableStatus}}>
                     {
-                        (this.state.loading)? <Loading/> : 
-                        <ScrollView horizontal={true}>
-                            <View>
-                                <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                    <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
-                                </Table>
-                                <ScrollView style={styles.tableDataWrapper}>
-                                    <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                        {
-                                            this.state.processedList.map((rowData, index) => (
-                                                <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
-                                            ))
-                                        }
-                                    </Table>
-                                </ScrollView>
-                            </View>
-                        </ScrollView>
+                        (this.state.loading)? (
+                            <Loading/>
+                        ) : (
+                            <TableList 
+                                list={this.state.list} 
+                                tableHeader={this.state.tableHeader} 
+                                widthArr={this.state.widthArr} 
+                                option={'schoolSchedule'} 
+                                semester={this.state.semester} 
+                                group={this.state.studentGroup} 
+                                schoolYear={this.state.schoolYear}
+                            />
+                        )    
                     }
                 </View>
             </View>
         )
     }
 }
+
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 const styles = StyleSheet.create({
     general: {
@@ -220,15 +209,25 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         flex: 1
     },
-    infoContainer: {
-        flex: 1,
+    tableContainer: {
+        top: 100,
+        bottom: 100,
         backgroundColor: '#fff',
     },
-    tableContainer: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    tableHeader: { height: 50, backgroundColor: '#9152f8' },
-    tableText: {     fontWeight: '100' },
-    tableDataWrapper: { marginTop: -1 },
-    tableRow: { height: 40, backgroundColor: '#E7E6E1'}
-
+    filter: {
+        position: 'absolute',
+        top: 80,
+        width: screenWidth*4/5,
+        borderRadius: 50,
+        height: 50,
+        backgroundColor: '#9152f8',
+        alignSelf: 'center',
+        flex: 1,
+    },
+    filterMenu: {
+        position: 'absolute',
+        top: 130,
+        width: screenWidth
+    }
 });
 
