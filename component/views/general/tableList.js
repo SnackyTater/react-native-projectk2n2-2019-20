@@ -37,7 +37,7 @@ export default class Result extends React.Component {
         } if(condition === 'schoolSchedule') {
             return this.schoolScheduleProcessor(rawList, filter)
         } if(condition === 'result') {
-
+            return this.resultProcessor(rawList)
         }
     }
 
@@ -82,6 +82,27 @@ export default class Result extends React.Component {
                 return holder
             }
         })
+        return processedList;
+    }
+
+    resultProcessor(rawList){
+        let processedList = rawList.map((listItem) => {
+            let holder = [];
+
+            holder.push(listItem.subject.subjectID);
+            holder.push(listItem.subject.name);
+            holder.push(listItem.subject.credits);
+            holder.push(listItem.grade);
+
+            console.log(listItem._id)
+            console.log(listItem.subject.subjectID)
+            console.log(listItem.subject.name)
+            console.log(listItem.subject.credits)
+            console.log(listItem.grade)
+
+            return processedList.push(holder);
+        })
+        console.log(processedList)
         return processedList;
     }
 

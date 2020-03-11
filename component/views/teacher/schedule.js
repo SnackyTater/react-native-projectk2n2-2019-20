@@ -1,29 +1,44 @@
 import React from 'react';
-import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage, ScrollView, TouchableOpacity, Dimensions} from 'react-native';
 import {Header, Left, Icon} from 'native-base';
-import { Table, Row } from 'react-native-table-component';
 import { Dropdown } from 'react-native-material-dropdown';
-import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility'
+
+import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility';
+import Loading from '../general/loading';
+import TableList from '../general/tableList';
+import TableSchedule from '../general/tableSchedule';
 
 export default class Result extends React.Component {
     constructor(props) {
         super(props);
-        this.onChangeText = this.onChangeText.bind(this)
+        this.onChangeSemester = this.onChangeSemester.bind(this)
+        this.onChangeSchoolYear = this.onChangeSchoolYear.bind(this)
+        this.onChangeTable = this.onChangeTable.bind(this)
         this.state = {
+            //user info
             userID: '',
             sessionToken: '',
+
+            //school time info
             currentSemester: 0,
             currentYear: '',
 
-            originalList: [],
-            processedList: [],
+            //list holder
+            list: [],
+
+            //filter setting
+            filterStatus: false,
+            filterOptionSemester: [{value: 1}, {value: 2}, {value: 3}],
+            filterOptionSchoolYear: [{value: '2016-2017'}, {value: '2017-2018'}, {value: '2018-2019'}, {value: '2019-2020'}],
+            filterOptionTable: [{value: 'danh sách'}, {value: 'thời khóa biểu'}],
+            tableType: 'danh sách',
 
             //table setting
+            tableStatus: 150,
             tableHeader: ['Tên lớp', 'Phòng', 'Thứ', 'Ca'],
             widthArr: [200,100,100,100],
 
-            //drop down list setting
-            filterOptionSemester: [{value: 1}, {value: 2}, {value: 3}],
+            loading: true
         }
     }
 
@@ -55,74 +70,99 @@ export default class Result extends React.Component {
                 'Authorization': 'Bearer ' + token,
                 }
             }).then((res) => res.json()).then((Schedule) => {
-                 let processedList = this.listProcessor(Schedule)
                 this.setState({
-                    originalList: [...Schedule],
-                    processedList: [...processedList]
+                    list: [...Schedule],
+                    loading: false
                 })
         }).done();
     }
 
-
-    listProcessor(rawList){
-        let processedList = rawList.map((listItem) => {
-            //setup variable
-            let holder = [];
-            let shift = listItem.from.name + '-' + listItem.to.name;
-
-            //push to holder
-            holder.push(listItem.class.name);
-            holder.push(listItem.classRoom.name);
-            holder.push(listItem.dayOfWeek);
-            holder.push(shift);
-
-            //push to processed list
-            return holder
-        })
-        return processedList;
+    filterStatusHandler(status){
+        (status) ? (
+            this.setState({
+                filterStatus: false,
+                tableStatus: 120
+            })
+        ) : (
+            this.setState({
+                filterStatus: true,
+                tableStatus: 300
+            })
+        )
     }
 
-    onChangeText(semester){
-        this.getSchedule(this.state.originalList, this.state.currentYear, semester, this.state.sessionToken)
+    onChangeSemester(semester){
+        this.setState({
+            loading: true
+        })
+        this.getScheduleData(this.state.userID , semester-1, this.state.currentYear, this.state.sessionToken)
         console.disableYellowBox = true;
+    }
+
+    onChangeSchoolYear(schoolYear){
+        this.setState({
+            loading: true
+        })
+        this.getScheduleData(this.state.userID , this.state.semester, schoolYear, this.state.sessionToken)
+        console.disableYellowBox = true;
+    }
+
+    onChangeTable(type){
+        this.setState({
+            tableType: type
+        })
+        console.log(type)
     }
 
     render() {
         return (
-                <View style={styles.general}>
-                    <Header style={styles.headerContainer}>
-                        <Left style={styles.menuContainer}>
-                            <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
-                        </Left>
-                        <View style={styles.headerInfoContainer}>
-                            <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu</Text>
-                        </View>
-                    </Header>
-                    <Text style={{fontSize: 20}}>Chọn kỳ học</Text>
-                    <Dropdown label={this.state.currentSemester} data={this.state.filterOptionSemester} onChangeText={this.onChangeText}/>
-                    <View style={styles.tableContainer}>
-                        <ScrollView horizontal={true}>
-                            <View style={styles.resultTable}>
-                                <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                    <Row data={this.state.tableHeader} widthArr={this.state.widthArr} style={styles.tableHeader} textStyle={styles.tableText}/>
-                                </Table>
-                                <ScrollView style={styles.tableDataWrapper}>
-                                    <Table borderStyle={{borderWidth: 1, borderColor: 'black'}}>
-                                        {
-                                            this.state.processedList.map((rowData, index) => (
-                                                <Row key={index} widthArr={this.state.widthArr} data={rowData} style={styles.tableRow} textStyle={styles.tableText}/>
-                                            ))
-                                        }
-                                    </Table>
-                                </ScrollView>
-                            </View>
-                            {/*table end here */}
-                        </ScrollView>
+            <View style={styles.general}>
+
+            <Header style={styles.headerContainer}>
+                <Left style={styles.menuContainer}>
+                    <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
+                </Left>
+                <View style={styles.headerInfoContainer}>
+                    <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu</Text>
+                </View>
+            </Header>
+
+            <TouchableOpacity style={styles.filter} onPress={() => {this.filterStatusHandler(this.state.filterStatus)}}>
+                <Text style={{textAlign:'center', fontSize: 30, color: 'white'}}>Filter</Text>
+            </TouchableOpacity>
+            {
+                (this.state.filterStatus) ? (
+                    <View style={styles.filterMenu}>
+                        <Dropdown label='chọn kỳ học' data={this.state.filterOptionSemester} onChangeText={this.onChangeSemester}/>
+                        <Dropdown label='Chọn năm học' data={this.state.filterOptionSchoolYear} onChangeText={this.onChangeSchoolYear}/>
+                        <Dropdown label='chọn kiểu hiển thị' data={this.state.filterOptionTable} onChangeText={this.onChangeTable}/>
                     </View>
-            </View>
+                ) : (null)
+            }
+            <ScrollView style={{flex: 1, top: this.state.tableStatus}}>
+                {
+                    (this.state.loading) ? (
+                        <Loading/> 
+                    ) : (
+                        (this.state.tableType === 'danh sách') ? (
+                            <View style={styles.tableContainer}>
+                                <TableList list={this.state.list} tableHeader={this.state.tableHeader} widthArr={this.state.widthArr} option={'schedule'}/>
+                            </View>
+                        ) : (
+                            <ScrollView style={styles.tableContainer}>
+                                <TableSchedule list={this.state.list}/>
+                            </ScrollView>
+                        )
+                        
+                    )
+                }
+            </ScrollView>
+        </View>
         )
     }
 }
+
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 const styles = StyleSheet.create({
     general: { flex: 1 },
@@ -144,15 +184,26 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         flex: 1
     },
-
+    table: {
+        position: 'absolute',
+        top: 280,
+    },
     //css for filter
-    infoContainer: { height:100 },
-    Text: { fontSize: 20 },
-
-    //css for table 
-    tableContainer: { flex: 1, backgroundColor: '#fff' },
-    tableHeader: { height: 50, backgroundColor: '#9152f8' },
-    tableText: { textAlign: 'center', fontWeight: '100' },
-    tableDataWrapper: { marginTop: -1 },
-    tableRow: { height: 40, backgroundColor: '#E7E6E1'}
+    filter: {
+        position: 'absolute',
+        top: 80,
+        width: screenWidth*4/5,
+        borderRadius: 50,
+        height: 50,
+        backgroundColor: '#9152f8',
+        alignSelf: 'center'
+    },
+    filterMenu: {
+        position: 'absolute',
+        top: 130,
+        width: screenWidth
+    },
+    tableContainer: {
+        flex: 1
+    }
 });

@@ -13,6 +13,7 @@ export default class Result extends React.Component {
     constructor(props) {
         super(props);
         this.onChangeSemester = this.onChangeSemester.bind(this)
+        this.onChangeSchoolYear = this.onChangeSchoolYear.bind(this)
         this.onChangeTable = this.onChangeTable.bind(this)
         this.state = {
             //user info
@@ -29,11 +30,12 @@ export default class Result extends React.Component {
             //filter setting
             filterStatus: false,
             filterOptionSemester: [{value: 1}, {value: 2}, {value: 3}],
+            filterOptionSchoolYear: [{value: '2016-2017'}, {value: '2017-2018'}, {value: '2018-2019'}, {value: '2019-2020'}],
             filterOptionTable: [{value: 'danh sách'}, {value: 'thời khóa biểu'}],
             tableType: 'danh sách',
 
             //table setting
-            tableStatus: 150,
+            tableStatus: 100,
             tableHeader: ['Tên lớp', 'Phòng', 'Thứ', 'Ca'],
             widthArr: [200,100,100,100],
 
@@ -59,7 +61,7 @@ export default class Result extends React.Component {
 
         }).catch((err) => {console.log('')});
     }
-
+    //'https://dangkyhoctlu.herokuapp.com/api/school-schedule/instructor-schedule/'+ userID +'?year=' + year + '&semester=' + semester
     getScheduleData(userID, semester, year, token){
         let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
         fetch(url, {
@@ -89,12 +91,12 @@ export default class Result extends React.Component {
         (status) ? (
             this.setState({
                 filterStatus: false,
-                tableStatus: 150
+                tableStatus: 100
             })
         ) : (
             this.setState({
                 filterStatus: true,
-                tableStatus: 210
+                tableStatus: 300
             })
         )
     }
@@ -103,7 +105,15 @@ export default class Result extends React.Component {
         this.setState({
             loading: true
         })
-        this.getScheduleData(this.state.userID , semester, this.state.currentYear, this.state.sessionToken)
+        this.getScheduleData(this.state.userID , semester-1, this.state.currentYear, this.state.sessionToken)
+        console.disableYellowBox = true;
+    }
+
+    onChangeSchoolYear(schoolYear){
+        this.setState({
+            loading: true
+        })
+        this.getScheduleData(this.state.userID , this.state.semester, schoolYear, this.state.sessionToken)
         console.disableYellowBox = true;
     }
 
@@ -117,7 +127,6 @@ export default class Result extends React.Component {
     render() {
         return (
             <View style={styles.general}>
-
                 <Header style={styles.headerContainer}>
                     <Left style={styles.menuContainer}>
                         <Icon name='menu' onPress={() => this.props.navigation.openDrawer()}/>
@@ -134,25 +143,21 @@ export default class Result extends React.Component {
                     (this.state.filterStatus) ? (
                         <View style={styles.filterMenu}>
                             <Dropdown label='chọn kỳ học' data={this.state.filterOptionSemester} onChangeText={this.onChangeSemester}/>
+                            <Dropdown label='Chọn năm học' data={this.state.filterOptionSchoolYear} onChangeText={this.onChangeSchoolYear}/>
                             <Dropdown label='chọn kiểu hiển thị' data={this.state.filterOptionTable} onChangeText={this.onChangeTable}/>
                         </View>
                     ) : (null)
                 }
-                <ScrollView style={{flex: 1, top: this.state.tableStatus}}>
+                <ScrollView style={{top: this.state.tableStatus}}>
                     {
                         (this.state.loading) ? (
                             <Loading/> 
                         ) : (
                             (this.state.tableType === 'danh sách') ? (
-                                <View style={styles.tableContainer}>
                                     <TableList list={this.state.list} tableHeader={this.state.tableHeader} widthArr={this.state.widthArr} option={'schedule'}/>
-                                </View>
                             ) : (
-                                <ScrollView style={styles.tableContainer}>
                                     <TableSchedule list={this.state.list}/>
-                                </ScrollView>
-                            )
-                            
+                            )       
                         )
                     }
                 </ScrollView>
