@@ -45,8 +45,49 @@ const createLoginSession = () => {
     AsyncStorage.setItem('session', JSON.stringify(session)).catch((err) => {console.log('')});
 }
 
+const getAppConfig = (token) => {
+    fetch('https://dangkyhoctlu.herokuapp.com/api/app-config', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + token,
+        }
+    }).then((res) => res.json()).then((data) => {
+        console.log(data);
+        AsyncStorage.setItem('appConfig', JSON.stringify(data)).catch((err) => {console.log('')});
+    }).done();
+}
+
+const getStudentGroup = () => {
+    AsyncStorage.getItem('user').then((preData) => {
+        let user = JSON.parse(preData);
+        let appConfig = AsyncStorage.getItem('appConfig').then((preData) => {
+            return JSON.parse(preData);
+        })
+        let holder = appConfig.lastestSchoolYear - user.user.info.schoolYear;
+        let speciality = user.user.info.speciality.shortName;
+        switch(holder){
+            case 0:
+                return 3;
+                break;
+            case 1:
+                return 2;
+                break;
+            default:
+                if(speciality === "TI" || speciality === "TC" || speciality === "TM"){
+                    return 2;
+                } else {
+                    return 1;
+                }
+                break;
+        }
+    })
+}
+
 module.exports = {
     getTimeNow,
     getCurrentSemesterAndYear,
-    createLoginSession
+    createLoginSession,
+    getAppConfig,
+    getStudentGroup
 }

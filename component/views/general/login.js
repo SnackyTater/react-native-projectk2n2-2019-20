@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image, Dimensions } from 'react-native';
-import { createLoginSession } from '../../../utils/utility';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image } from 'react-native';
+import { createLoginSession, getAppConfig } from '../../../utils/utility';
 
 
 export default class Login extends React.Component {
@@ -27,6 +27,12 @@ export default class Login extends React.Component {
     }
 
     login() {
+      let bruh = JSON.stringify({
+        username: this.state.username,
+        password: this.state.password,
+      })
+      console.log(bruh)
+
       fetch('https://dangkyhoctlu.herokuapp.com/api/login', {
         method: 'POST',
         headers: {
@@ -39,8 +45,9 @@ export default class Login extends React.Component {
         })
       }).then((res) => res.json()).then((data) => {
         console.log(data);
-        let flag = data.hasOwnProperty('message');
+        getAppConfig(data.token);
 
+        let flag = data.hasOwnProperty('message');
         if(flag){
           if(data.message == 'not_existed'){
             alert('Tài khoản không tồn tại');
@@ -48,19 +55,17 @@ export default class Login extends React.Component {
           if(data.message == 'password_wrong'){
             alert('Sai mật khẩu');
           }
-        }else {
-            if((data.user.username == this.state.username.toUpperCase()) || (data.user.username == this.state.username)) {
-
+        } else {
               AsyncStorage.setItem('user', JSON.stringify(data)).catch((err) => {console.log('')});
               createLoginSession();
 
               if(data.user.role == 'sv'){
+                console.log('blin2')
                 this.props.navigation.navigate('studentProfile');
               }
               if(data.user.role == 'gv'){
                 this.props.navigation.navigate('teacherProfile');
               }
-            }
         }
       }).done();
     }

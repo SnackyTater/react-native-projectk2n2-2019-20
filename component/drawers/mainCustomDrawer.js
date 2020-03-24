@@ -42,6 +42,7 @@ export default class subDrawer extends Component {
   resetColor(){
     this.setState({
       studentProfile: '#fff',
+      studentRegister: '#fff',
       studentResult: '#fff',
       studentSchedule: '#fff',
       studentSchoolSchedule: '#fff',
@@ -55,6 +56,7 @@ export default class subDrawer extends Component {
   defaultColor(){
     this.setState({
       studentProfile: '#9d65f7',
+      studentRegister: '#fff',
       studentResult: '#fff',
       studentSchedule: '#fff',
       studentSchoolSchedule: '#fff',
@@ -82,6 +84,15 @@ export default class subDrawer extends Component {
                     this.setState({studentProfile: '#9d65f7'});
                   }}>
                 <Text style={styles.navText}>Thông tin cá nhân</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{backgroundColor: this.state.studentRegister, padding: 10}}>
+              <TouchableOpacity style = {styles.navItemStyle} onPress={() => {
+                    this.props.navigation.navigate('studentRegister');
+                    this.resetColor();
+                    this.setState({studentRegister: '#9d65f7'});
+                  }}>
+                <Text style={styles.navText}>Đăng ký học</Text>
               </TouchableOpacity>
             </View>
             <View style={{backgroundColor: this.state.studentResult, padding: 10}}>

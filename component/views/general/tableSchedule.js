@@ -4,12 +4,13 @@ import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-componen
 
 
 
-export default class Result extends React.Component {
+export default class TableSchedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             //lists
             list: [],
+            originalList: [],
             dummyList: [],
 
             //table setting
@@ -23,15 +24,23 @@ export default class Result extends React.Component {
 
     async componentDidMount(){
         let holder = this.createDummyList()
+        let flag = this.state.originalList == this.props.list
+        await setInterval(() => {
+            if(!flag){
+                let list = this.listProcessor(this.props.list)
+                this.setState({
+                    list: list,
+                })
+            }
+        }, 500)
+    }
+
+    async updateContent(){
         let list = this.listProcessor(this.props.list)
         await this.setState({
             list: list,
-            dummyList: holder,
-            tableHeader: this.props.tableHeader,
-            widthArr: this.props.widthArr
         })
     }
-
     listProcessor(rawList){
         let processedList = rawList.map((listItem) => {
             //setup variable

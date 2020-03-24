@@ -58,6 +58,7 @@ export default class Result extends React.Component {
 
             //fetch data from server
             this.getScheduleData(this.state.userID, this.state.currentSemester, this.state.currentYear, this.state.sessionToken);
+            
 
         }).catch((err) => {console.log('')});
     }
@@ -148,7 +149,7 @@ export default class Result extends React.Component {
                         </View>
                     ) : (null)
                 }
-                <ScrollView style={{top: this.state.tableStatus}}>
+                <View style={{top: this.state.tableStatus}}>
                     {
                         (this.state.loading) ? (
                             <Loading/> 
@@ -160,13 +161,14 @@ export default class Result extends React.Component {
                             )       
                         )
                     }
-                </ScrollView>
+                </View>
             </View>
         )
     }
 }
 
 const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = Math.round(Dimensions.get('window').height);
 
 const styles = StyleSheet.create({
     general: { flex: 1 },
