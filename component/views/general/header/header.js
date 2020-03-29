@@ -11,7 +11,7 @@ export default class Navbar extends React.Component {
         return (
             <Header style={styles.headerContainer}>
                 <Left style={styles.menuContainer}>
-                    <Icon name='menu' onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}/>
+                    <Icon name='menu' onPress={() => {this.props.openDrawer()}}/>
                 </Left>
                 <View style={styles.headerInfoContainer}>
                     <Text style={{color: '#fff', fontSize: 20}}>{this.props.headerInfo}</Text>

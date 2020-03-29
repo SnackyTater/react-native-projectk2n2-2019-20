@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, AsyncStorage, ScrollView } from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 import { Table, Row} from 'react-native-table-component';
-import Loading from '../general/loading';
+
+import Loading from '../general/loading/loading';
 
 export default class Result extends React.Component {
     constructor(props) {

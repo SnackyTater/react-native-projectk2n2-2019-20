@@ -4,10 +4,11 @@ import {Header, Left, Icon} from 'native-base';
 import { Dropdown } from 'react-native-material-dropdown';
 
 import { getCurrentSemesterAndYear, getTimeNow } from '../../../utils/utility';
+import {getScheduleData} from '../../../controller/fetcher/scheduleController'
 
-import Loading from '../general/loading';
-import TableList from '../general/tableList';
-import TableSchedule from '../general/tableSchedule';
+import Loading from '../general/loading/loading';
+import TableList from '../general/table/list/tableList';
+import TableSchedule from '../general/table/schedule/tableSchedule';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -62,16 +63,9 @@ export default class Result extends React.Component {
 
         }).catch((err) => {console.log('')});
     }
-    //'https://dangkyhoctlu.herokuapp.com/api/school-schedule/instructor-schedule/'+ userID +'?year=' + year + '&semester=' + semester
-    getScheduleData(userID, semester, year, token){
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + userID + '/semester/'+ semester +'/year/'+ year +'?active=true';
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + token,
-            }
-        }).then((res) => res.json()).then((data) => {
+
+    getScheduleData(userID, semester, schoolYear, token){
+        getScheduleData('sv', userID, semester, schoolYear, token).then((res) => res.json()).then((data) => {
             let flag = data === null 
             if(flag){
                 alert('Không có dữ liệu thời khóa biểu của kỳ ' + semester );

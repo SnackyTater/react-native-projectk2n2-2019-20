@@ -2,10 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, AsyncStorage, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
 import {Header, Left, Icon} from 'native-base';
 
-import TableSchedule from '../general/tableSchedule';
+import TableSchedule from '../general/table/schedule/tableSchedule';
+import Loading from '../general/loading/loading';
 
-import Loading from '../general/loading';
 import {getTimeNow, getCurrentSemesterAndYear} from '../../../utils/utility';
+import {getRegistrationEvent, toggleRegister} from '../../../controller/fetcher/registerController';
+import {getScheduleData} from '../../../controller/fetcher/scheduleController'
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -31,58 +33,65 @@ export default class Register extends React.Component {
     }
 
     componentDidMount(){
-        AsyncStorage.getItem('user').then((preData) => {
-            let postData = JSON.parse(preData);
+        AsyncStorage.getItem('user').then((preData) => {JSON.parse(preData)}).then((postData) => {
             let currentSemesterAndYear = getCurrentSemesterAndYear(getTimeNow());
-            let holder = []
-            for(let i = 0; i < 7; i++){
-                holder.push([null, null, null, null, null, null, null, null, null, null,])
-            }
+            let tracker = this.generateEmptyTracker()
+
             this.setState({
-                userData: postData,
+                userData: postData.user,
+                token: postData.token,
                 semester: currentSemesterAndYear.currentSemester,
                 schoolYear: currentSemesterAndYear.currentYear,
-                scheduleTracker: holder
+                scheduleTracker: tracker
             })
-            this.getRegistrationEvent()
+
+            getRegistrationEvent(this.state.token, this.state.userData).then((data) => {
+                (data.message) ? (
+                    this.setState({
+                        loading: false
+                    }),
+                    alert(data.message)
+                ) : (
+                    this.setState({
+                        subjectList: data.subjectList,
+                    }),
+                    getScheduleData('student', this.state.userData.user._id, this.state.semester, this.state.schoolYear, this.state.token).then((schedule) => {
+                        if(schedule === null){
+                            this.setState({
+                                schedule: [],
+                                loading: false
+                            })
+                        } else {
+                            this.setState({
+                                schedule: schedule.list,
+                                loading: false
+                            });
+                            this.trackerHandler(schedule.list, this.state.scheduleTracker)
+                        }
+                    })
+                )
+            })
         }).catch((err) => {console.log(err)}); 
     }
 
-    getScheduleData(){
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + this.state.userData.user.info._id + '/semester/'+ this.state.semester +'/year/'+ this.state.schoolYear +'?active=true';
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + this.state.userData.token,
-            }
-        }).then((res) => res.json()).then((data) => {
-            
-            let flag = data === null 
-            if(flag){
-                this.setState({
-                    list: [],
-                    loading: false
-                })
-            } else {
-                this.setState({
-                    list: data.list,
-                    loading: false
-                });
-                this.trackerHandler(data.list)
-            }
-        }).done();
+    generateEmptyTracker(){
+        let holder = []
+        for(let i = 0; i < 7; i++){
+            holder.push([null, null, null, null, null, null, null, null, null, null,])
+        }
+        return holder
     }
 
-    trackerHandler(schedule){
-        let holder = this.state.scheduleTracker
+    //track schedule of every class in day of week
+    trackerHandler(schedule, tracker){
+        let holder = tracker
         schedule.forEach((item) => {
-            let sth = this.state.scheduleTracker[item.dayOfWeek]
-            let from = item.from.name-1;
-            let to = item.to.name;
-            for (let i = from; i < to; i ++){
+            let sth = tracker[item.dayOfWeek]
+
+            for (let i = item.from.name-1; i < item.to.name; i ++){
                 sth[i] = item._id
             }
+
             holder[item.dayOfWeek] = sth
         })
         this.setState({
@@ -90,51 +99,10 @@ export default class Register extends React.Component {
         })
     }
 
-    getRegistrationEvent(){
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/registration-event/subjects';
-        fetch(url, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this.state.userData.token
-            },
-            body: JSON.stringify({
-              _id: this.state.userData.user._id,
-              info: this.state.userData.user.info
-            })
-        }).then((res) => res.json()).then((data) => {
-            (data.message) ? (
-                this.setState({
-                    loading: false
-                }),
-                alert(data.message)
-            ) : (
-                this.setState({
-                    subjectList: data.subjectList,
-                }),
-                this.getScheduleData()
-            )
-        }).done();
-    }
-
-    toggleRegister(lessons){
-        let userData = this.state.userData
-        let url = 'https://dangkyhoctlu.herokuapp.com/api/schedule/student/' + userData.user.info._id +'/semester/' + this.state.semester +'/year/' + this.state.schoolYear + '/toggle-register';
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + userData.token
-            },
-            body: JSON.stringify({
-              lesson: lessons,
-              subject: this.state.selectedSubject
-            })
-        }).then((res) => res.json()).then((data) => {
+    registerHandler(lessons){
+        toggleRegister(lessons, this.state.selectedSubject, userData.user.info._id, this.state.semester, this.state.schoolYear, this.state.token).then((res) => res.json()).then((data) => {
             this.studentCounter(lessons, data.list)
-            this.getScheduleData()
+            getScheduleData('student', this.state.userData.user._id, this.state.semester, this.state.schoolYear, this.state.token)
         }).done();
     }
 
@@ -163,6 +131,7 @@ export default class Register extends React.Component {
         })
     }
 
+    //check if selected class is match with any other class in schedule tracker
     classSelecterHandler(lesson){
         let holder = this.state.scheduleTracker
 
@@ -184,7 +153,7 @@ export default class Register extends React.Component {
             lesson.map((item) => {
                 let flag = holder[item.dayOfWeek].includes(item._id)
                 if(flag){
-                    this.toggleRegister(lesson)
+                    toggleRegister(lessons, this.state.selectedSubject, userData.user.info._id, this.state.semester, this.state.schoolYear, this.state.token)
                 } else {
                     alert("Lớp đăng ký đã bị trùng")
                 }

@@ -5,8 +5,8 @@ import { Dropdown } from 'react-native-material-dropdown';
 
 import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility';
 
-import Loading from '../general/loading';
-import TableList from '../general/tableList';
+import Loading from '../general/loading/loading';
+import TableList from '../general/table/list/tableList';
 
 export default class schoolSchedule extends React.Component {
     constructor(props) {

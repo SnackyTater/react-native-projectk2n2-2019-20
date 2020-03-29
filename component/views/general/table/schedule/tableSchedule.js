@@ -1,16 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 
-
+import styles from './style'
 
 export default class TableSchedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             //lists
-            list: [],
-            originalList: [],
             dummyList: [],
 
             //table setting
@@ -24,23 +22,11 @@ export default class TableSchedule extends React.Component {
 
     async componentDidMount(){
         let holder = this.createDummyList()
-        let flag = this.state.originalList == this.props.list
-        await setInterval(() => {
-            if(!flag){
-                let list = this.listProcessor(this.props.list)
-                this.setState({
-                    list: list,
-                })
-            }
-        }, 500)
-    }
-
-    async updateContent(){
-        let list = this.listProcessor(this.props.list)
         await this.setState({
-            list: list,
+            dummyList: holder
         })
     }
+
     listProcessor(rawList){
         let processedList = rawList.map((listItem) => {
             //setup variable
@@ -77,7 +63,7 @@ export default class TableSchedule extends React.Component {
                     </TableWrapper>
                 </Table>
                 {
-                    this.state.list.map((item) => {
+                    this.listProcessor(this.props.list).map((item) => {
                         let dayOfWeek = item[2] + 1;
                         let start = item[3] - 1;
                         let duration = item[4] - item[3] + 1;
@@ -120,16 +106,3 @@ export default class TableSchedule extends React.Component {
     }
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-    head: {  height: 40,  backgroundColor: '#9152f8'  },
-    wrapper: { flexDirection: 'row', width: 800, height: 350},
-    title: { flex: 1, backgroundColor: '#9152f8'},
-    row: {  height: 35  },
-    text: { textAlign: 'center', color: 'white' },
-    subjectInfoContainer: {    
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1
-    }
-});

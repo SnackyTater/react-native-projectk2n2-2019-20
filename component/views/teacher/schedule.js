@@ -4,9 +4,9 @@ import {Header, Left, Icon} from 'native-base';
 import { Dropdown } from 'react-native-material-dropdown';
 
 import {getCurrentSemesterAndYear, getTimeNow} from '../../../utils/utility';
-import Loading from '../general/loading';
-import TableList from '../general/tableList';
-import TableSchedule from '../general/tableSchedule';
+import Loading from '../general/loading/loading';
+import TableList from '../general/table/list/tableList';
+import TableSchedule from '../general/table/schedule/tableSchedule';
 
 export default class Result extends React.Component {
     constructor(props) {
@@ -63,6 +63,8 @@ export default class Result extends React.Component {
     }
 
     getSchedule(userID, year, semester, token){
+        let url = 'https://dangkyhoctlu.herokuapp.com/api/school-schedule/instructor-schedule/'+ userID +'?year=' + year + '&semester=' + semester
+        console.log(url)
         fetch('https://dangkyhoctlu.herokuapp.com/api/school-schedule/instructor-schedule/'+ userID +'?year=' + year + '&semester=' + semester, {
                 method: 'GET',
                 headers: {
@@ -95,7 +97,7 @@ export default class Result extends React.Component {
         this.setState({
             loading: true
         })
-        this.getScheduleData(this.state.userID , semester-1, this.state.currentYear, this.state.sessionToken)
+        this.getSchedule(this.state.userID, this.state.currentYear, semester, this.state.sessionToken)
         console.disableYellowBox = true;
     }
 
@@ -103,7 +105,7 @@ export default class Result extends React.Component {
         this.setState({
             loading: true
         })
-        this.getScheduleData(this.state.userID , this.state.semester, schoolYear, this.state.sessionToken)
+        this.getSchedule(this.state.userID, schoolYear, this.state.semester, this.state.sessionToken)
         console.disableYellowBox = true;
     }
 
@@ -126,7 +128,7 @@ export default class Result extends React.Component {
                     <Text style={{color: '#fff', fontSize: 25}}>Thời khóa biểu</Text>
                 </View>
             </Header>
-
+            <View style={{width: screenWidth, height: screenHeight}}>
             <TouchableOpacity style={styles.filter} onPress={() => {this.filterStatusHandler(this.state.filterStatus)}}>
                 <Text style={{textAlign:'center', fontSize: 30, color: 'white'}}>Filter</Text>
             </TouchableOpacity>
@@ -157,12 +159,14 @@ export default class Result extends React.Component {
                     )
                 }
             </ScrollView>
+            </View>
         </View>
         )
     }
 }
 
 const screenWidth = Math.round(Dimensions.get('window').width);
+const screenHeight = Math.round(Dimensions.get('window').height);
 
 const styles = StyleSheet.create({
     general: { flex: 1 },
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
     //css for filter
     filter: {
         position: 'absolute',
-        top: 80,
+        top: 10,
         width: screenWidth*4/5,
         borderRadius: 50,
         height: 50,
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
     },
     filterMenu: {
         position: 'absolute',
-        top: 130,
+        top: 60,
         width: screenWidth
     },
     tableContainer: {

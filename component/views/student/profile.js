@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
-import Loading from '../general/loading';
+import Loading from '../general/loading/loading';
 import {Header, Left, Icon} from 'native-base';
 
 export default class Profile extends React.Component {
